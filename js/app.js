@@ -208,13 +208,15 @@ function setView(view) {
 
   // Update button styles
   const views = ["treemap", "beeswarm", "circlepack"];
-  const activeClass = "bg-slate-900 text-white";
-  const inactiveClass = "bg-white text-slate-600";
+  const activeClass = "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900";
+  const inactiveClass = "bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300";
 
   views.forEach(v => {
     const btn = document.getElementById("view-" + v);
     if (btn) {
-      btn.classList.remove(...activeClass.split(" "), ...inactiveClass.split(" "));
+      // Remove all active and inactive classes
+      btn.classList.remove("bg-slate-900", "dark:bg-slate-100", "text-white", "dark:text-slate-900", 
+                           "bg-white", "dark:bg-slate-700", "text-slate-600", "dark:text-slate-300");
       if (v === view) {
         btn.classList.add(...activeClass.split(" "));
       } else {
