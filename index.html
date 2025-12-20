@@ -8,6 +8,26 @@
       name="description"
       content="Visualize your subscription costs with an interactive grid. See the true proportion of your monthly spending at a glance."
     />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#6366F1" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="SubGrid" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icons/icon-512.png" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="shortcut icon" href="/icons/icon-192.png" />
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/modern-screenshot@4.6.7/dist/index.js"></script>
@@ -59,6 +79,42 @@
   <body
     class="flex min-h-screen flex-col bg-[#F8F9FB] font-sans text-slate-800 selection:bg-indigo-100 selection:text-indigo-900"
   >
+    <!-- PWA Install Banner -->
+    <div
+      id="install-banner"
+      class="hidden fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg"
+    >
+      <div class="mx-auto max-w-4xl px-4 py-3 sm:px-6">
+        <div class="flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20">
+              <span class="iconify h-6 w-6" data-icon="ph:download-simple-bold"></span>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-bold">Install SubGrid</p>
+              <p class="text-xs opacity-90">Access offline & save to home screen</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              id="install-btn"
+              onclick="installPWA()"
+              class="rounded-lg bg-white px-4 py-2 text-sm font-bold text-indigo-600 transition-all hover:bg-indigo-50 active:scale-95"
+            >
+              Install
+            </button>
+            <button
+              onclick="document.getElementById('install-banner').classList.add('hidden')"
+              class="rounded-lg p-2 transition-all hover:bg-white/10 active:scale-95"
+              aria-label="Close"
+            >
+              <span class="iconify h-5 w-5" data-icon="ph:x-bold"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <header
       class="mx-auto w-full max-w-2xl px-4 pb-3 pt-6 sm:px-6 sm:pb-4 sm:pt-8"
     >
@@ -794,5 +850,97 @@
     <script src="js/circlepack.js"></script>
     <script src="js/modals.js"></script>
     <script src="js/bank-import.js"></script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+      // Register service worker for PWA functionality
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('/sw.js')
+            .then((registration) => {
+              console.log('✓ ServiceWorker registered:', registration.scope);
+              
+              // Check for updates periodically
+              setInterval(() => {
+                registration.update();
+              }, 60 * 60 * 1000); // Check every hour
+              
+              // Handle updates
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // New service worker available, show update notification
+                    if (confirm('A new version of SubGrid is available! Reload to update?')) {
+                      newWorker.postMessage({ type: 'SKIP_WAITING' });
+                      window.location.reload();
+                    }
+                  }
+                });
+              });
+            })
+            .catch((error) => {
+              console.log('✗ ServiceWorker registration failed:', error);
+            });
+            
+          // Handle service worker controller change
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            window.location.reload();
+          });
+        });
+      }
+      
+      // PWA Install Prompt
+      let deferredPrompt;
+      const installBanner = document.getElementById('install-banner');
+      const installButton = document.getElementById('install-btn');
+      
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Show install banner
+        if (installBanner) {
+          installBanner.classList.remove('hidden');
+        }
+      });
+      
+      window.addEventListener('appinstalled', () => {
+        console.log('✓ PWA installed successfully');
+        deferredPrompt = null;
+        if (installBanner) {
+          installBanner.classList.add('hidden');
+        }
+      });
+      
+      function installPWA() {
+        if (!deferredPrompt) return;
+        
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('✓ User accepted PWA install');
+          } else {
+            console.log('User dismissed PWA install');
+          }
+          deferredPrompt = null;
+          if (installBanner) {
+            installBanner.classList.add('hidden');
+          }
+        });
+      }
+      
+      // Handle online/offline events
+      window.addEventListener('online', () => {
+        console.log('✓ Connection restored');
+        // Optionally show a notification
+      });
+      
+      window.addEventListener('offline', () => {
+        console.log('✗ Connection lost - running in offline mode');
+        // Optionally show a notification
+      });
+    </script>
   </body>
 </html>
