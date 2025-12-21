@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'subgrid-v1.0.0';
+const CACHE_VERSION = 'subgrid-v1.1.0';
 const CACHE_NAME = `${CACHE_VERSION}`;
 const OFFLINE_URL = '/offline.html';
 
@@ -18,8 +18,13 @@ const PRECACHE_ASSETS = [
   '/js/modals.js',
   '/js/presets.js',
   '/js/bank-import.js',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  '/js/theme.js',
+  '/js/geolocation.js',
+  '/icons/favicon-16x16.png',
+  '/icons/favicon-32x32.png',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png',
+  '/icons/apple-touch-icon.png'
 ];
 
 // CDN resources to cache on first use
@@ -88,6 +93,14 @@ self.addEventListener('fetch', (event) => {
 
   // Handle API calls (exchange rates) - Network first, then cache
   if (url.origin === 'https://open.er-api.com') {
+    event.respondWith(
+      networkFirstStrategy(request, CACHE_NAME)
+    );
+    return;
+  }
+
+  // Handle geolocation APIs - Network first with long cache
+  if (url.origin === 'https://ipapi.co' || url.origin === 'https://restcountries.com') {
     event.respondWith(
       networkFirstStrategy(request, CACHE_NAME)
     );

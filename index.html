@@ -679,6 +679,15 @@
                 data-icon="ph:caret-down-bold"
               ></span>
             </div>
+            <div id="location-info" class="mt-3 hidden rounded-lg bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 p-3">
+              <div class="flex items-start gap-2">
+                <span class="iconify h-4 w-4 text-indigo-600 dark:text-indigo-400 mt-0.5" data-icon="ph:map-pin-bold"></span>
+                <div class="flex-1 text-xs">
+                  <span class="font-medium text-indigo-900 dark:text-indigo-300">Auto-detected: </span>
+                  <span id="detected-location" class="text-indigo-700 dark:text-indigo-400"></span>
+                </div>
+              </div>
+            </div>
             <p class="mt-2 text-xs text-slate-400 dark:text-slate-500">
               All prices will be converted using approximate exchange rates
             </p>
@@ -885,6 +894,7 @@
     <script src="js/circlepack.js"></script>
     <script src="js/modals.js"></script>
     <script src="js/bank-import.js"></script>
+    <script src="js/geolocation.js"></script>
     
     <!-- PWA Service Worker Registration -->
     <script>
