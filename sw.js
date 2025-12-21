@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'subgrid-v1.3.1';
+const CACHE_VERSION = 'subgrid-v1.3.2';
 const CACHE_NAME = `${CACHE_VERSION}`;
 const OFFLINE_URL = '/offline.html';
 
@@ -41,11 +41,8 @@ const CDN_RESOURCES = [
 
 // Install event - cache core assets
 self.addEventListener('install', (event) => {
-  console.log('[ServiceWorker] Installing...');
-  
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[ServiceWorker] Precaching app shell');
       // Cache offline page first (critical)
       return cache.add(OFFLINE_URL).then(() => {
         // Then cache other assets, but don't fail if some are missing
@@ -58,7 +55,6 @@ self.addEventListener('install', (event) => {
         );
       });
     }).then(() => {
-      console.log('[ServiceWorker] Skip waiting');
       return self.skipWaiting();
     })
   );
@@ -66,20 +62,16 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('[ServiceWorker] Activating...');
-  
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-            console.log('[ServiceWorker] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
     }).then(() => {
-      console.log('[ServiceWorker] Claiming clients');
       return self.clients.claim();
     })
   );
@@ -143,12 +135,10 @@ async function cacheFirstStrategy(request, cacheName) {
   const cached = await cache.match(request);
   
   if (cached) {
-    console.log('[ServiceWorker] Serving from cache:', request.url);
     return cached;
   }
 
   try {
-    console.log('[ServiceWorker] Fetching from network:', request.url);
     const response = await fetch(request);
     
     // Cache successful responses
@@ -168,7 +158,6 @@ async function networkFirstStrategy(request, cacheName) {
   const cache = await caches.open(cacheName);
   
   try {
-    console.log('[ServiceWorker] Fetching from network (network-first):', request.url);
     const response = await fetch(request);
     
     // Cache successful responses
@@ -178,7 +167,6 @@ async function networkFirstStrategy(request, cacheName) {
     
     return response;
   } catch (error) {
-    console.log('[ServiceWorker] Network failed, trying cache:', request.url);
     const cached = await cache.match(request);
     
     if (cached) {
@@ -227,11 +215,8 @@ async function syncExchangeRates() {
     if (response.ok) {
       const cache = await caches.open(CACHE_NAME);
       cache.put('https://open.er-api.com/v6/latest/USD', response);
-      console.log('[ServiceWorker] Exchange rates synced');
     }
   } catch (error) {
     console.error('[ServiceWorker] Failed to sync rates:', error);
   }
 }
-
-console.log('[ServiceWorker] Service Worker loaded');

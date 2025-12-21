@@ -929,8 +929,6 @@
           navigator.serviceWorker
             .register('/sw.js')
             .then((registration) => {
-              console.log('✓ ServiceWorker registered:', registration.scope);
-              
               // Check for updates periodically
               setInterval(() => {
                 registration.update();
@@ -951,7 +949,7 @@
               });
             })
             .catch((error) => {
-              console.log('✗ ServiceWorker registration failed:', error);
+              console.error('ServiceWorker registration failed:', error);
             });
             
           // Handle service worker controller change
@@ -992,7 +990,6 @@
       });
       
       window.addEventListener('appinstalled', () => {
-        console.log('✓ PWA installed successfully');
         deferredPrompt = null;
         if (installBannerTimeout) {
           clearTimeout(installBannerTimeout);
@@ -1012,11 +1009,6 @@
         
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('✓ User accepted PWA install');
-          } else {
-            console.log('User dismissed PWA install');
-          }
           deferredPrompt = null;
           if (installBanner) {
             installBanner.classList.add('hidden');
@@ -1026,14 +1018,83 @@
       
       // Handle online/offline events
       window.addEventListener('online', () => {
-        console.log('✓ Connection restored');
         // Optionally show a notification
       });
       
       window.addEventListener('offline', () => {
-        console.log('✗ Connection lost - running in offline mode');
         // Optionally show a notification
       });
+      
+      // Dev Console Welcome (Desktop + Online only)
+      (function() {
+        const isDesktop = window.innerWidth >= 768;
+        const isOnline = navigator.onLine;
+        
+        if (isDesktop && isOnline) {
+          // ASCII Art Logo
+          console.log(
+            '%c' +
+            '\n╔═══════════════════════════════════════════════════════════════╗\n' +
+            '║                                                               ║\n' +
+            '║   ███████╗██╗   ██╗██████╗  ██████╗ ██████╗ ██╗██████╗     ║\n' +
+            '║   ██╔════╝██║   ██║██╔══██╗██╔════╝ ██╔══██╗██║██╔══██╗    ║\n' +
+            '║   ███████╗██║   ██║██████╔╝██║  ███╗██████╔╝██║██║  ██║    ║\n' +
+            '║   ╚════██║██║   ██║██╔══██╗██║   ██║██╔══██╗██║██║  ██║    ║\n' +
+            '║   ███████║╚██████╔╝██████╔╝╚██████╔╝██║  ██║██║██████╔╝    ║\n' +
+            '║   ╚══════╝ ╚═════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝╚═════╝     ║\n' +
+            '║                                                               ║\n' +
+            '╚═══════════════════════════════════════════════════════════════╝\n',
+            'color: #6366f1; font-weight: bold; font-family: monospace;'
+          );
+          
+          console.log(
+            '%c👋 Welcome, Developer!',
+            'color: #10b981; font-size: 18px; font-weight: bold; padding: 10px 0;'
+          );
+          
+          console.log(
+            '%cSubGrid - Track & visualize your subscription costs\n',
+            'color: #64748b; font-size: 14px;'
+          );
+          
+          console.log(
+            '%c🔗 GitHub Repository:\n' +
+            '%chttps://github.com/hoangvu12/subgrid\n',
+            'color: #8b5cf6; font-weight: bold;',
+            'color: #6366f1; text-decoration: underline;'
+          );
+          
+          console.log(
+            '%c💡 Features:\n' +
+            '%c• PWA with offline support\n' +
+            '• Dark mode with system sync\n' +
+            '• Auto-currency detection via IP\n' +
+            '• Export/Import subscriptions\n' +
+            '• Multiple visualization types\n',
+            'color: #f59e0b; font-weight: bold;',
+            'color: #64748b;'
+          );
+          
+          console.log(
+            '%c🛠️ Tech Stack:\n' +
+            '%cVanilla JS • Tailwind CSS • Service Workers • localStorage\n',
+            'color: #ec4899; font-weight: bold;',
+            'color: #64748b;'
+          );
+          
+          console.log(
+            '%c✨ Found a bug or have a feature idea?\n' +
+            '%cOpen an issue: https://github.com/hoangvu12/subgrid/issues\n',
+            'color: #06b6d4; font-weight: bold;',
+            'color: #64748b;'
+          );
+          
+          console.log(
+            '%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+            'color: #6366f1;'
+          );
+        }
+      })();
     </script>
   </body>
 </html>

@@ -13,13 +13,11 @@ async function getCountryCurrencyMap() {
       const data = JSON.parse(cached);
       const age = Date.now() - data.timestamp;
       if (age < COUNTRY_CURRENCY_CACHE_DURATION) {
-        console.log('Using cached country-currency map');
         return data.map;
       }
     }
 
     // Fetch from reliable static source (restcountries.com provides free country data)
-    console.log('Fetching country-currency mapping...');
     const response = await fetch('https://restcountries.com/v3.1/all?fields=cca2,currencies');
     
     if (!response.ok) {
@@ -44,7 +42,6 @@ async function getCountryCurrencyMap() {
       timestamp: Date.now()
     }));
 
-    console.log('Country-currency map cached successfully');
     return countryToCurrency;
 
   } catch (error) {
@@ -59,7 +56,6 @@ async function detectLocationAndCurrency() {
   // Check if already detected or user declined
   const alreadyDetected = localStorage.getItem('locationDetected');
   if (alreadyDetected === 'true' || alreadyDetected === 'declined') {
-    console.log('Location detection already handled');
     return;
   }
 
@@ -188,12 +184,9 @@ function showManualCurrencyMessage() {
 async function performLocationDetection() {
 
   try {
-    console.log('Detecting location for auto-currency...');
-    
     // Fetch country-currency mapping first
     const countryCurrencyMap = await getCountryCurrencyMap();
     if (!countryCurrencyMap) {
-      console.log('Country-currency map unavailable, skipping auto-detection');
       localStorage.setItem('locationDetected', 'true');
       return;
     }
@@ -213,25 +206,19 @@ async function performLocationDetection() {
     const city = data.city;
     const country = data.country_name;
 
-    console.log(`Location detected: ${city}, ${country} (${countryCode})`);
-
     // Map country to currency using fetched data
     const detectedCurrency = countryCurrencyMap[countryCode] || 'USD';
-    console.log(`Mapped ${countryCode} to currency: ${detectedCurrency}`);
     
     // Only auto-set if user hasn't manually selected a currency
     const manuallySet = localStorage.getItem('currencyManuallySet');
     
     // Only override if not manually set by user
     if (manuallySet === 'true') {
-      console.log('Currency was manually set by user, skipping auto-detection');
       return;
     }
     
     // Set currency in localStorage
     localStorage.setItem('currency', detectedCurrency);
-    
-    console.log(`Auto-set currency to: ${detectedCurrency}`);
     
     // Update selectedCurrency variable in app.js
     if (typeof window.selectedCurrency !== 'undefined') {
