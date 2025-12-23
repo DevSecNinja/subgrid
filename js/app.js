@@ -438,10 +438,23 @@ function removeSub(subId) {
   save();
 }
 
-function clearAllSubs() {
-  if (!confirm("Delete all subscriptions?")) return;
+async function clearAllSubs() {
+  const result = await showConfirmAlert(
+    'Delete all subscriptions?',
+    'This will remove all your subscriptions. Settings and currency preferences will be kept.',
+    'Delete All',
+    'Cancel'
+  );
+  
+  if (!result.isConfirmed) return;
+  
   subs = [];
   save();
+  
+  showSuccessAlert(
+    'Subscriptions Cleared',
+    'All subscriptions have been deleted successfully.'
+  );
 }
 
 function editSub(subId) {
