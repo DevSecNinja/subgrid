@@ -2,6 +2,8 @@ let subs = [];
 let step = 1;
 let selectedCurrency = "USD";
 let currentView = "treemap";
+let filteredSubs = []; // For search functionality
+let searchQuery = "";
 
 // Make selectedCurrency accessible globally
 window.selectedCurrency = selectedCurrency;
@@ -254,10 +256,16 @@ function renderList() {
   const emptyState = document.getElementById("empty-state");
   const nextBtn = document.getElementById("next-btn-1");
   const clearBtn = document.getElementById("clear-btn");
+  const searchSection = document.getElementById("search-section");
+  const searchResultsInfo = document.getElementById("search-results-info");
+
+  // Determine which subscriptions to display
+  const displaySubs = searchQuery ? filteredSubs : subs;
 
   if (subs.length === 0) {
     listContainer.classList.add("hidden");
     emptyState.classList.remove("hidden");
+    searchSection.classList.add("hidden");
     nextBtn.disabled = true;
     nextBtn.classList.add("opacity-50", "cursor-not-allowed");
     clearBtn.classList.add("hidden");
@@ -267,32 +275,61 @@ function renderList() {
 
   emptyState.classList.add("hidden");
   listContainer.classList.remove("hidden");
+  searchSection.classList.remove("hidden");
   nextBtn.disabled = false;
   nextBtn.classList.remove("opacity-50", "cursor-not-allowed");
   clearBtn.classList.remove("hidden");
   clearBtn.classList.add("flex");
 
-  let html = "";
-  for (let i = 0; i < subs.length; i++) {
-    const sub = subs[i];
-    const color = getColor(sub.color);
-
-    html += '<div class="flex items-center justify-between p-4 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm">';
-    html += '<div class="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" onclick="editSub(\'' + sub.id + '\')">';
-    html += '<div class="w-1 h-10 rounded-full shrink-0" style="background: linear-gradient(180deg, ' + color.bg + ' 0%, ' + color.accent + ' 100%);"></div>';
-    html += iconHtml(sub, "w-10 h-10");
-    html += '<div class="min-w-0">';
-    html += '<div class="font-bold text-slate-900 dark:text-slate-100 truncate">' + sub.name + '</div>';
-    html += '<div class="text-xs text-slate-500 dark:text-slate-400">' + formatOriginalPrice(sub) + ' / ' + sub.cycle + '</div>';
-    html += '</div></div>';
-    html += '<div class="flex items-center gap-1">';
-    html += '<button onclick="editSub(\'' + sub.id + '\')" class="text-slate-300 dark:text-slate-600 hover:text-indigo-500 dark:hover:text-indigo-400 p-2"><span class="iconify" data-icon="ph:pencil-simple-bold"></span></button>';
-    html += '<button onclick="removeSub(\'' + sub.id + '\')" class="text-slate-300 dark:text-slate-600 hover:text-red-500 dark:hover:text-red-400 p-2"><span class="iconify" data-icon="ph:trash-bold"></span></button>';
-    html += '</div></div>';
+  // Show search results info
+  if (searchQuery) {
+    searchResultsInfo.classList.remove("hidden");
+    if (displaySubs.length === 0) {
+      searchResultsInfo.textContent = `No subscriptions found for "${searchQuery}"`;
+      searchResultsInfo.classList.add("text-red-500", "dark:text-red-400");
+      searchResultsInfo.classList.remove("text-slate-500", "dark:text-slate-400");
+    } else {
+      searchResultsInfo.textContent = `Found ${displaySubs.length} of ${subs.length} subscriptions`;
+      searchResultsInfo.classList.remove("text-red-500", "dark:text-red-400");
+      searchResultsInfo.classList.add("text-slate-500", "dark:text-slate-400");
+    }
+  } else {
+    searchResultsInfo.classList.add("hidden");
   }
 
-  html += '<button onclick="openModal()" class="w-full py-4 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 font-bold hover:border-indigo-300 dark:hover:border-indigo-600 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-slate-800 transition-all flex items-center justify-center gap-2">';
-  html += '<span class="iconify w-5 h-5" data-icon="ph:plus-bold"></span> Add Another</button>';
+  let html = "";
+  
+  if (displaySubs.length === 0 && searchQuery) {
+    // Show empty search state
+    html = '<div class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-8 text-center">';
+    html += '<span class="iconify mb-3 h-12 w-12 text-slate-300 dark:text-slate-600" data-icon="ph:magnifying-glass-bold"></span>';
+    html += '<p class="text-sm font-medium text-slate-600 dark:text-slate-400">No subscriptions found</p>';
+    html += '<p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Try a different search term</p>';
+    html += '</div>';
+  } else {
+    for (let i = 0; i < displaySubs.length; i++) {
+      const sub = displaySubs[i];
+      const color = getColor(sub.color);
+
+      html += '<div class="flex items-center justify-between p-4 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm">';
+      html += '<div class="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" onclick="editSub(\'' + sub.id + '\')">';
+      html += '<div class="w-1 h-10 rounded-full shrink-0" style="background: linear-gradient(180deg, ' + color.bg + ' 0%, ' + color.accent + ' 100%);"></div>';
+      html += iconHtml(sub, "w-10 h-10");
+      html += '<div class="min-w-0">';
+      html += '<div class="font-bold text-slate-900 dark:text-slate-100 truncate">' + sub.name + '</div>';
+      html += '<div class="text-xs text-slate-500 dark:text-slate-400">' + formatOriginalPrice(sub) + ' / ' + sub.cycle + '</div>';
+      html += '</div></div>';
+      html += '<div class="flex items-center gap-1">';
+      html += '<button onclick="editSub(\'' + sub.id + '\')" class="text-slate-300 dark:text-slate-600 hover:text-indigo-500 dark:hover:text-indigo-400 p-2"><span class="iconify" data-icon="ph:pencil-simple-bold"></span></button>';
+      html += '<button onclick="removeSub(\'' + sub.id + '\')" class="text-slate-300 dark:text-slate-600 hover:text-red-500 dark:hover:text-red-400 p-2"><span class="iconify" data-icon="ph:trash-bold"></span></button>';
+      html += '</div></div>';
+    }
+
+    if (!searchQuery) {
+      html += '<button onclick="openModal()" class="w-full py-4 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 font-bold hover:border-indigo-300 dark:hover:border-indigo-600 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-slate-800 transition-all flex items-center justify-center gap-2">';
+      html += '<span class="iconify w-5 h-5" data-icon="ph:plus-bold"></span> Add Another</button>';
+    }
+  }
 
   listContainer.innerHTML = html;
 }
@@ -536,6 +573,51 @@ function handleFormSubmit(evt) {
 
   save();
   hideModal();
+}
+
+// Search functionality
+function filterSubscriptions() {
+  const searchInput = document.getElementById("search-input");
+  const clearSearchBtn = document.getElementById("clear-search-btn");
+  
+  searchQuery = searchInput.value.toLowerCase().trim();
+  
+  // Show/hide clear button
+  if (searchQuery) {
+    clearSearchBtn.classList.remove("hidden");
+  } else {
+    clearSearchBtn.classList.add("hidden");
+  }
+  
+  if (!searchQuery) {
+    filteredSubs = [];
+    renderList();
+    return;
+  }
+  
+  // Filter subscriptions by name, cycle, or price
+  filteredSubs = subs.filter(sub => {
+    const nameMatch = sub.name.toLowerCase().includes(searchQuery);
+    const cycleMatch = sub.cycle.toLowerCase().includes(searchQuery);
+    const priceMatch = sub.price.toString().includes(searchQuery);
+    const currencyMatch = sub.currency.toLowerCase().includes(searchQuery);
+    
+    return nameMatch || cycleMatch || priceMatch || currencyMatch;
+  });
+  
+  renderList();
+}
+
+function clearSearch() {
+  const searchInput = document.getElementById("search-input");
+  const clearSearchBtn = document.getElementById("clear-search-btn");
+  
+  searchInput.value = "";
+  searchQuery = "";
+  filteredSubs = [];
+  clearSearchBtn.classList.add("hidden");
+  
+  renderList();
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
