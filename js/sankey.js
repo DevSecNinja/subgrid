@@ -13,8 +13,8 @@ class Sankey {
   // Categorize subscriptions based on name
   categorizeSubscription(name) {
     const nameLower = name.toLowerCase();
-    
-    if (nameLower.includes('netflix') || nameLower.includes('disney') || nameLower.includes('hulu') || 
+
+    if (nameLower.includes('netflix') || nameLower.includes('disney') || nameLower.includes('hulu') ||
         nameLower.includes('hbo') || nameLower.includes('prime video') || nameLower.includes('apple tv')) {
       return 'Streaming';
     }
@@ -40,7 +40,7 @@ class Sankey {
     if (nameLower.includes('news') || nameLower.includes('times') || nameLower.includes('post')) {
       return 'News';
     }
-    
+
     return 'Other';
   }
 
@@ -48,7 +48,7 @@ class Sankey {
     if (!items.length) return { nodes: [], links: [] };
 
     const totalCost = items.reduce((sum, item) => sum + item.cost, 0);
-    
+
     // Group by category
     const categoryGroups = {};
     items.forEach(item => {
@@ -67,9 +67,9 @@ class Sankey {
 
     const nodes = [];
     const links = [];
-    
+
     const totalHeight = this.height - this.padding * 2 - 20; // Extra margin for category labels
-    
+
     // Level 0: Total (left side)
     const totalX = this.padding + this.labelOffset;
     const totalY = this.padding + 10 + totalHeight / 2 - totalHeight / 4;
@@ -88,9 +88,9 @@ class Sankey {
     // Level 1: Categories (middle)
     const categoryX = this.padding + this.labelOffset + (this.width - this.padding * 2 - this.labelOffset * 2) / 2 - this.nodeWidth / 2;
     let categoryY = this.padding + 10;
-    
+
     const categories = Object.keys(categoryGroups).sort((a, b) => categoryTotals[b] - categoryTotals[a]);
-    
+
     categories.forEach(category => {
       const height = (categoryTotals[category] / totalCost) * totalHeight;
       nodes.push({
@@ -252,7 +252,7 @@ window.renderSankey = function() {
             };
             color = categoryColors[link.category] || '#6B7280';
           }
-          
+
           return `
             <linearGradient id="sankey-gradient-${idx}" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" style="stop-color:${color};stop-opacity:0.4" />
@@ -261,7 +261,7 @@ window.renderSankey = function() {
           `;
         }).join('')}
       </defs>
-      
+
       <!-- Draw links (flows) -->
       ${links.map((link, idx) => {
         // Calculate path for the link
@@ -269,10 +269,10 @@ window.renderSankey = function() {
         const targetY = link.target.y + link.target.height / 2;
         const sourceX = link.source.x + link.source.width;
         const targetX = link.target.x;
-        
+
         const linkHeight = link.target.height;
         const controlPointOffset = (targetX - sourceX) * 0.5;
-        
+
         const path = `
           M ${sourceX} ${sourceY - linkHeight/2}
           C ${sourceX + controlPointOffset} ${sourceY - linkHeight/2},
@@ -284,7 +284,7 @@ window.renderSankey = function() {
             ${sourceX} ${sourceY + linkHeight/2}
           Z
         `;
-        
+
         return `
           <path
             class="sankey-link"
@@ -294,11 +294,11 @@ window.renderSankey = function() {
           />
         `;
       }).join('')}
-      
+
       <!-- Draw nodes -->
       ${nodes.map((node, idx) => {
         let fillColor, strokeColor;
-        
+
         if (node.type === 'total') {
           fillColor = '#E0E7FF';
           strokeColor = '#4F46E5';
@@ -311,7 +311,7 @@ window.renderSankey = function() {
           fillColor = color.bg;
           strokeColor = color.accent;
         }
-        
+
         return `
           <g class="sankey-node-group" data-id="${node.subscriptionId || node.id}" data-type="${node.type}">
             <rect
@@ -328,7 +328,7 @@ window.renderSankey = function() {
           </g>
         `;
       }).join('')}
-      
+
       <!-- Draw labels -->
       ${nodes.map(node => {
         // Only show labels for total and category nodes, not subscriptions
@@ -338,15 +338,15 @@ window.renderSankey = function() {
           const logoUrl = domain
             ? `https://img.logo.dev/${domain}?token=pk_KuI_oR-IQ1-fqpAfz3FPEw&size=60&retina=true&format=png`
             : null;
-          
+
           const logoSize = 18;
           const showLogo = logoUrl && node.height > 12;
-          
+
           if (!showLogo) return '';
-          
+
           const logoX = node.x + node.width + 10;
           const logoY = node.y + node.height / 2;
-          
+
           return `
             <g class="sankey-label pointer-events-none">
               <image
@@ -359,10 +359,10 @@ window.renderSankey = function() {
             </g>
           `;
         }
-        
+
         // For total and category nodes, show text labels
         let labelX, labelY, anchor;
-        
+
         if (node.type === 'total') {
           labelX = node.x - 10;
           labelY = node.y + node.height / 2;
@@ -372,13 +372,13 @@ window.renderSankey = function() {
           labelY = node.y - 8;
           anchor = 'middle';
         }
-        
+
         // Display formatted value for total
         let displayText = node.name;
         if (node.type === 'total') {
           displayText = formatCurrencyShort(node.value) + '/mo';
         }
-        
+
         return `
           <g class="sankey-label pointer-events-none">
             <text
@@ -394,7 +394,7 @@ window.renderSankey = function() {
         `;
       }).join('')}
     </svg>
-    
+
     <!-- Legend -->
     <div class="mt-4 sm:mt-6 grid grid-cols-2 sm:grid-cols-4 gap-2 px-4 sm:px-6">
       ${Object.entries(categoryColors).filter(([cat]) => {
@@ -413,21 +413,21 @@ window.renderSankey = function() {
 
   // Add interactions
   const nodeGroups = container.querySelectorAll(".sankey-node-group");
-  
+
   nodeGroups.forEach(group => {
     const node = group.querySelector('.sankey-node');
     const nodeType = group.dataset.type;
     const nodeId = group.dataset.id;
-    
+
     // Create tooltip
     const tooltip = document.createElement('div');
     tooltip.className = 'sankey-tooltip absolute opacity-0 transition-opacity pointer-events-none z-20';
-    
+
     // Find the node data
-    const nodeData = nodes.find(n => 
+    const nodeData = nodes.find(n =>
       (n.subscriptionId && n.subscriptionId === nodeId) || n.id === nodeId
     );
-    
+
     if (nodeData) {
       tooltip.innerHTML = `
         <div class="bg-slate-900 dark:bg-slate-800 text-white text-xs sm:text-sm rounded-lg px-3 py-2 whitespace-nowrap shadow-xl">
@@ -437,7 +437,7 @@ window.renderSankey = function() {
       `;
       container.appendChild(tooltip);
     }
-    
+
     group.addEventListener("mouseenter", (e) => {
       if (tooltip) {
         const rect = group.getBoundingClientRect();
@@ -449,14 +449,14 @@ window.renderSankey = function() {
         tooltip.classList.add('opacity-100');
       }
     });
-    
+
     group.addEventListener("mouseleave", () => {
       if (tooltip) {
         tooltip.classList.remove('opacity-100');
         tooltip.classList.add('opacity-0');
       }
     });
-    
+
     if (nodeType === 'subscription') {
       group.addEventListener("click", () => {
         editSub(nodeId);
