@@ -65,9 +65,18 @@ async function detectLocationAndCurrency() {
 
 // Show consent dialog for location detection
 function showLocationConsentDialog() {
+  // Find the description box to insert after it
+  const mainContent = document.querySelector('main');
+  const descriptionBox = mainContent?.querySelector('.mb-6');
+
+  if (!descriptionBox) {
+    console.warn('Could not find description box to insert currency dialog');
+    return;
+  }
+
   const consent = document.createElement('div');
   consent.id = 'location-consent';
-  consent.className = 'fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-sm z-50 rounded-2xl bg-white dark:bg-slate-800 p-5 shadow-2xl border-2 border-indigo-200 dark:border-indigo-800 animate-slide-in';
+  consent.className = 'mb-6 rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-card border-2 border-indigo-200 dark:border-indigo-700 animate-fade-in';
   consent.innerHTML = `
     <div class="mb-4">
       <div class="flex items-start gap-3 mb-3">
@@ -110,14 +119,17 @@ function showLocationConsentDialog() {
     </div>
   `;
 
-  document.body.appendChild(consent);
+  // Insert after the description box
+  descriptionBox.insertAdjacentElement('afterend', consent);
 }
 
 // User accepts location detection
 async function acceptLocationDetection() {
-  // Remove consent dialog
+  // Transform consent dialog to loading state
   const consent = document.getElementById('location-consent');
-  if (consent) consent.remove();
+  if (!consent) return;
+
+  transformToLoadingState(consent);
 
   // Proceed with detection
   await performLocationDetection();
@@ -125,10 +137,6 @@ async function acceptLocationDetection() {
 
 // User declines location detection
 function declineLocationDetection() {
-  // Remove consent dialog
-  const consent = document.getElementById('location-consent');
-  if (consent) consent.remove();
-
   // Mark as declined
   localStorage.setItem('locationDetected', 'declined');
 
@@ -147,37 +155,84 @@ function declineLocationDetection() {
     }
   }
 
-  // Show info message about manual selection
-  showManualCurrencyMessage();
+  // Transform consent dialog into decline message
+  const consent = document.getElementById('location-consent');
+  if (consent) {
+    transformToDeclineMessage(consent);
+  }
 }
 
-// Show message about manual currency selection
-function showManualCurrencyMessage() {
-  const message = document.createElement('div');
-  message.className = 'fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-sm z-50 rounded-xl bg-slate-100 dark:bg-slate-700 p-4 shadow-lg border border-slate-200 dark:border-slate-600 animate-slide-in';
-  message.innerHTML = `
+// Transform dialog to loading state
+function transformToLoadingState(element) {
+  element.className = 'mb-6 rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-card border-2 border-indigo-200 dark:border-indigo-700 transition-all duration-300';
+  element.innerHTML = `
     <div class="flex items-start gap-3">
-      <span class="iconify h-5 w-5 text-slate-600 dark:text-slate-300 mt-0.5" data-icon="ph:gear-bold"></span>
+      <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
+        <span class="iconify h-5 w-5 text-indigo-600 dark:text-indigo-400 animate-spin" data-icon="ph:circle-notch-bold"></span>
+      </div>
       <div class="flex-1">
-        <p class="text-sm font-medium text-slate-900 dark:text-slate-100">No problem!</p>
+        <p class="text-sm font-bold text-slate-900 dark:text-slate-100">Detecting location...</p>
+        <p class="text-xs text-slate-600 dark:text-slate-300 mt-1">Just a moment</p>
+      </div>
+    </div>
+  `;
+}
+
+// Transform dialog to decline message
+function transformToDeclineMessage(element) {
+  element.className = 'mb-6 rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-card border-2 border-slate-200 dark:border-slate-600 transition-all duration-300';
+  element.innerHTML = `
+    <div class="flex items-start gap-3">
+      <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700">
+        <span class="iconify h-5 w-5 text-slate-600 dark:text-slate-300" data-icon="ph:gear-bold"></span>
+      </div>
+      <div class="flex-1">
+        <p class="text-sm font-bold text-slate-900 dark:text-slate-100">No problem!</p>
         <p class="text-xs text-slate-600 dark:text-slate-300 mt-1">You can select your currency in Settings</p>
       </div>
-      <button onclick="this.parentElement.parentElement.remove()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+      <button onclick="this.parentElement.parentElement.remove()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
         <span class="iconify h-4 w-4" data-icon="ph:x-bold"></span>
       </button>
     </div>
   `;
 
-  document.body.appendChild(message);
-
   // Auto-remove after 4 seconds
   setTimeout(() => {
-    if (message.parentElement) {
-      message.style.opacity = '0';
-      message.style.transition = 'opacity 0.3s ease-in-out';
-      setTimeout(() => message.remove(), 300);
+    if (element.parentElement) {
+      element.style.opacity = '0';
+      element.style.transition = 'opacity 0.3s ease-in-out';
+      setTimeout(() => element.remove(), 300);
     }
   }, 4000);
+}
+
+// Transform dialog to success message
+function transformToSuccessMessage(element, country, currency) {
+  element.className = 'mb-6 rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-card border-2 border-green-200 dark:border-green-700 transition-all duration-300';
+  element.innerHTML = `
+    <div class="flex items-start gap-3">
+      <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30">
+        <span class="iconify h-5 w-5 text-green-600 dark:text-green-400" data-icon="ph:check-circle-bold"></span>
+      </div>
+      <div class="flex-1">
+        <p class="text-sm font-bold text-slate-900 dark:text-slate-100">Currency successfully set</p>
+        <p class="text-xs text-slate-600 dark:text-slate-300 mt-1">${country}</p>
+        <p class="text-xs text-green-600 dark:text-green-400 mt-1 font-medium">${currency} selected as default</p>
+      </div>
+      <button onclick="this.parentElement.parentElement.remove()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+        <span class="iconify h-4 w-4" data-icon="ph:x-bold"></span>
+      </button>
+    </div>
+  `;
+
+  // Auto-remove after 5 seconds
+  setTimeout(() => {
+    if (element.parentElement) {
+      element.style.opacity = '0';
+      element.style.transition = 'opacity 0.3s ease-in-out';
+      setTimeout(() => element.remove(), 300);
+    }
+  }, 5000);
 }
 
 // Perform actual location detection (after consent)
@@ -271,48 +326,50 @@ async function performLocationDetection() {
     // Mark as detected
     localStorage.setItem('locationDetected', 'true');
 
-    // Show notification to user (country only, not city)
-    showLocationDetectedNotification(country, detectedCurrency);
+    // Transform the loading dialog to success message
+    const consent = document.getElementById('location-consent');
+    if (consent) {
+      transformToSuccessMessage(consent, country, detectedCurrency);
+    }
 
   } catch (error) {
     console.error('Location detection failed:', error);
-    // Silently fail - user can manually select currency
+    // Transform to error message if dialog still exists
+    const consent = document.getElementById('location-consent');
+    if (consent) {
+      transformToErrorMessage(consent);
+    }
+    // Mark as detected to avoid showing again
     localStorage.setItem('locationDetected', 'true');
   }
 }
 
-// Show a subtle notification about auto-detected currency
-function showLocationDetectedNotification(country, currency) {
-  // Create notification element at bottom (to avoid install banner)
-  const notification = document.createElement('div');
-  notification.id = 'location-notification';
-  notification.className = 'fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-sm z-40 rounded-xl bg-white dark:bg-slate-800 p-4 shadow-2xl border border-slate-200 dark:border-slate-700 animate-slide-in';
-  notification.innerHTML = `
+// Transform dialog to error message
+function transformToErrorMessage(element) {
+  element.className = 'mb-6 rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-card border-2 border-orange-200 dark:border-orange-700 transition-all duration-300';
+  element.innerHTML = `
     <div class="flex items-start gap-3">
-      <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30">
-        <span class="iconify h-5 w-5 text-green-600 dark:text-green-400" data-icon="ph:check-circle-bold"></span>
+      <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-900/30">
+        <span class="iconify h-5 w-5 text-orange-600 dark:text-orange-400" data-icon="ph:warning-bold"></span>
       </div>
       <div class="flex-1">
-        <p class="text-sm font-bold text-slate-900 dark:text-slate-100">Currency successfully set</p>
-        <p class="text-xs text-slate-600 dark:text-slate-300 mt-1">${country}</p>
-        <p class="text-xs text-green-600 dark:text-green-400 mt-1 font-medium">${currency} selected as default</p>
+        <p class="text-sm font-bold text-slate-900 dark:text-slate-100">Detection unavailable</p>
+        <p class="text-xs text-slate-600 dark:text-slate-300 mt-1">No problem! You can select your currency in Settings</p>
       </div>
-      <button onclick="this.parentElement.parentElement.remove()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+      <button onclick="this.parentElement.parentElement.remove()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
         <span class="iconify h-4 w-4" data-icon="ph:x-bold"></span>
       </button>
     </div>
   `;
 
-  document.body.appendChild(notification);
-
-  // Auto-remove after 5 seconds
+  // Auto-remove after 4 seconds
   setTimeout(() => {
-    if (notification.parentElement) {
-      notification.style.opacity = '0';
-      notification.style.transition = 'opacity 0.3s ease-in-out';
-      setTimeout(() => notification.remove(), 300);
+    if (element.parentElement) {
+      element.style.opacity = '0';
+      element.style.transition = 'opacity 0.3s ease-in-out';
+      setTimeout(() => element.remove(), 300);
     }
-  }, 5000);
+  }, 4000);
 }
 
 // Reset location detection (for testing or manual reset)
