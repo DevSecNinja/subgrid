@@ -33,6 +33,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
         with:
+          ref: main  # Work on main branch to commit the version update
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -63,6 +64,9 @@ jobs:
           else
             git commit -m "chore: update CACHE_VERSION to ${{ steps.get-version.outputs.version }}"
             git push origin HEAD:main
+            # Update the tag to point to the new commit
+            git tag -f ${{ steps.get-version.outputs.version }}
+            git push -f origin ${{ steps.get-version.outputs.version }}
           fi
 
   # Build job
@@ -72,6 +76,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+        with:
+          ref: ${{ needs.update-version.outputs.version }}  # Check out the updated tag
 
       - name: Setup Node.js
         uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6
@@ -106,7 +112,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
         with:
-          ref: main  # Get the updated code from main
+          ref: ${{ needs.update-version.outputs.version }}  # Get the updated tag
 
       - name: Create Release
         uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e # v1
