@@ -293,7 +293,7 @@ function showLocationDetectedNotification(country, currency) {
         <span class="iconify h-5 w-5 text-green-600 dark:text-green-400" data-icon="ph:check-circle-bold"></span>
       </div>
       <div class="flex-1">
-        <p class="text-sm font-bold text-slate-900 dark:text-slate-100">Currency Set Successfully</p>
+        <p class="text-sm font-bold text-slate-900 dark:text-slate-100">Currency successfully set</p>
         <p class="text-xs text-slate-600 dark:text-slate-300 mt-1">${country}</p>
         <p class="text-xs text-green-600 dark:text-green-400 mt-1 font-medium">${currency} selected as default</p>
       </div>
