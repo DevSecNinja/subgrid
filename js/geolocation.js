@@ -95,7 +95,7 @@ function showLocationConsentDialog() {
         </div>
         <div class="flex items-start gap-2">
           <span class="iconify h-4 w-4 text-green-500 mt-0.5" data-icon="ph:check-circle-fill"></span>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Only country-level detection</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Only country-level detection - sends your IP address to ipapi.co</p>
         </div>
         <div class="flex items-start gap-2">
           <span class="iconify h-4 w-4 text-green-500 mt-0.5" data-icon="ph:check-circle-fill"></span>
