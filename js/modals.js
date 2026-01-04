@@ -34,7 +34,7 @@ function openModal() {
   document.getElementById("sub-form").reset();
   document.getElementById("entry-id").value = "";
   document.getElementById("sub-currency").value = selectedCurrency;
-  document.getElementById("category").value = "Other";
+  populateCategoryDropdown("Other");
   document.getElementById("custom-category-input").classList.add("hidden");
   updateFavicon("");
   pickColor(randColor().id);
@@ -47,6 +47,62 @@ function openModal() {
 
 function closeModal() {
   hideModal();
+}
+
+function populateCategoryDropdown(selectedValue) {
+  const categorySelect = document.getElementById("category");
+  if (!categorySelect) return;
+
+  // Preset categories
+  const presetCategories = [
+    "Streaming",
+    "Music",
+    "Cloud Storage",
+    "Productivity",
+    "Fitness",
+    "Gaming",
+    "News",
+    "Learning",
+    "Other"
+  ];
+
+  // Get custom categories from existing subscriptions
+  const customCategories = [];
+  if (typeof subs !== 'undefined' && subs.length > 0) {
+    subs.forEach(sub => {
+      if (sub.category && !presetCategories.includes(sub.category) && !customCategories.includes(sub.category)) {
+        customCategories.push(sub.category);
+      }
+    });
+  }
+
+  // Sort custom categories alphabetically
+  customCategories.sort();
+
+  // Build the options HTML
+  let html = '';
+  presetCategories.forEach(cat => {
+    html += `<option value="${cat}">${cat}</option>`;
+  });
+  
+  // Add custom categories
+  customCategories.forEach(cat => {
+    html += `<option value="${cat}">${cat}</option>`;
+  });
+  
+  html += '<option value="__custom__">+ Add Custom Category</option>';
+  
+  categorySelect.innerHTML = html;
+  
+  // Set the selected value if provided
+  if (selectedValue) {
+    if (Array.from(categorySelect.options).map(opt => opt.value).includes(selectedValue)) {
+      categorySelect.value = selectedValue;
+    } else if (selectedValue !== "__custom__") {
+      // Custom category not in list yet (shouldn't happen, but handle it)
+      categorySelect.value = "__custom__";
+    }
+  }
 }
 
 function handleCategoryChange(value) {
@@ -70,16 +126,9 @@ function openModalWithPreset(presetIdx) {
   document.getElementById("price").value = preset.price;
   document.getElementById("cycle").value = preset.cycle;
   document.getElementById("url").value = preset.domain;
-  
-  // Set category from preset
-  const categorySelect = document.getElementById("category");
-  const categoryOptions = Array.from(categorySelect.options).map(opt => opt.value);
-  
-  if (preset.category && categoryOptions.includes(preset.category)) {
-    categorySelect.value = preset.category;
-  } else {
-    categorySelect.value = "Other";
-  }
+
+  // Populate category dropdown and set value from preset
+  populateCategoryDropdown(preset.category || "Other");
   document.getElementById("custom-category-input").classList.add("hidden");
 
   updateFavicon(preset.domain);

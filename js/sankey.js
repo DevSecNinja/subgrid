@@ -16,7 +16,7 @@ class Sankey {
     if (storedCategory) {
       return storedCategory;
     }
-    
+
     // Otherwise, fall back to auto-detection based on name
     const nameLower = name.toLowerCase();
 

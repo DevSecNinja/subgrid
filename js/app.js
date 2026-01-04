@@ -477,12 +477,17 @@ function editSub(subId) {
   document.getElementById("sub-currency").value = sub.currency || selectedCurrency;
   document.getElementById("cycle").value = sub.cycle;
   document.getElementById("url").value = sub.url || "";
-  
+
+  // Populate category dropdown with all categories
+  if (typeof populateCategoryDropdown === 'function') {
+    populateCategoryDropdown();
+  }
+
   // Set category
   const categorySelect = document.getElementById("category");
   const customCategoryInput = document.getElementById("custom-category-input");
   const categoryOptions = Array.from(categorySelect.options).map(opt => opt.value);
-  
+
   if (sub.category && categoryOptions.includes(sub.category)) {
     categorySelect.value = sub.category;
     customCategoryInput.classList.add("hidden");
@@ -600,7 +605,7 @@ function handleFormSubmit(evt) {
   const categorySelect = document.getElementById("category");
   const customCategoryInput = document.getElementById("custom-category");
   let category = categorySelect.value;
-  
+
   if (category === "__custom__" && customCategoryInput.value.trim()) {
     category = customCategoryInput.value.trim();
   } else if (category === "__custom__") {
