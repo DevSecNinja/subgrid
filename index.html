@@ -1034,7 +1034,8 @@
             </a>
             <span class="hidden sm:inline text-slate-300 dark:text-slate-700">•</span>
             <a
-              href="https://github.com/DevSecNinja/subgrid"
+              id="github-link"
+              href="#"
               target="_blank"
               rel="noopener noreferrer"
               class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center gap-1.5"
@@ -1202,12 +1203,20 @@
             'color: #64748b; font-size: 14px;'
           );
 
-          console.log(
-            '%c🔗 GitHub Repository:\n' +
-            '%chttps://github.com/hoangvu12/subgrid\n',
-            'color: #8b5cf6; font-weight: bold;',
-            'color: #6366f1; text-decoration: underline;'
-          );
+          // Load and display GitHub URL from manifest
+          fetch('/manifest.json')
+            .then(res => res.json())
+            .then(manifest => {
+              if (manifest.repository && manifest.repository.url) {
+                console.log(
+                  '%c🔗 GitHub Repository:\n' +
+                  `%c${manifest.repository.url}\n`,
+                  'color: #8b5cf6; font-weight: bold;',
+                  'color: #6366f1; text-decoration: underline;'
+                );
+              }
+            })
+            .catch(() => {});
 
           console.log(
             '%c💡 Features:\n' +
@@ -1227,12 +1236,27 @@
             'color: #64748b;'
           );
 
-          console.log(
-            '%c✨ Found a bug or have a feature idea?\n' +
-            '%cOpen an issue: https://github.com/hoangvu12/subgrid/issues\n',
-            'color: #06b6d4; font-weight: bold;',
-            'color: #64748b;'
-          );
+          // Load repository URL from manifest
+          fetch('/manifest.json')
+            .then(res => res.json())
+            .then(manifest => {
+              if (manifest.repository && manifest.repository.url) {
+                console.log(
+                  '%c✨ Found a bug or have a feature idea?\n' +
+                  `%cOpen an issue: ${manifest.repository.url}/issues\n`,
+                  'color: #06b6d4; font-weight: bold;',
+                  'color: #64748b;'
+                );
+              }
+            })
+            .catch(() => {
+              console.log(
+                '%c✨ Found a bug or have a feature idea?\n' +
+                '%cOpen an issue on the repository\n',
+                'color: #06b6d4; font-weight: bold;',
+                'color: #64748b;'
+              );
+            });
 
           console.log(
             '%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
@@ -1240,6 +1264,19 @@
           );
         }
       })();
+
+      // Load GitHub URL dynamically from manifest
+      fetch('/manifest.json')
+        .then(res => res.json())
+        .then(manifest => {
+          if (manifest.repository && manifest.repository.url) {
+            const githubLink = document.getElementById('github-link');
+            if (githubLink) {
+              githubLink.href = manifest.repository.url;
+            }
+          }
+        })
+        .catch(err => console.log('Could not load manifest repository info:', err));
     </script>
   </body>
 </html>
