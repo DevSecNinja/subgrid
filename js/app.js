@@ -418,7 +418,7 @@ function getVexlyImportUrl() {
   };
 
   const encoded = encodeURIComponent(JSON.stringify(exportData));
-  return "https://vexly.app/import?subs=" + encoded + "&utm_source=subgrid&utm_medium=email&utm_campaign=import";
+  return "https://vexly.app/import?subs=" + encoded + "utm_campaign=import";
 }
 
 function renderPresets() {
