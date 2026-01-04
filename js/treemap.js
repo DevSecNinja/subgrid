@@ -322,6 +322,17 @@ function renderGrid() {
   }
 
   gridEl.innerHTML = html;
+
+  // Add click handlers to cells
+  gridEl.querySelectorAll('.treemap-cell').forEach(cell => {
+    cell.style.cursor = 'pointer';
+    cell.addEventListener('click', () => {
+      const id = cell.dataset.id;
+      if (id && typeof editSub === 'function') {
+        editSub(id);
+      }
+    });
+  });
 }
 
 async function exportAsImage() {
