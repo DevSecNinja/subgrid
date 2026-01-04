@@ -127,3 +127,4 @@ jobs:
             CACHE_VERSION automatically updated to ${{ needs.update-version.outputs.version }}
           draft: false
           prerelease: false
+          generate_release_notes: true
