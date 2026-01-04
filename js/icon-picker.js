@@ -201,14 +201,25 @@ function clearSelectedIcon() {
     customIconInput.value = "";
   }
   
-  // Clear URL if it was set
-  const urlInput = document.getElementById("url");
-  if (urlInput) {
-    urlInput.value = "";
-  }
+  // Clear URL if it was set (but don't do this - let URL stay if user entered it)
+  // const urlInput = document.getElementById("url");
+  // if (urlInput) {
+  //   urlInput.value = "";
+  // }
   
-  // Reset favicon preview
-  updateFavicon("");
+  // Reset favicon preview to default state
+  const preview = document.getElementById("favicon-preview");
+  if (preview) {
+    preview.innerHTML = '<span class="iconify h-5 w-5 text-slate-300 dark:text-slate-500" data-icon="ph:globe-simple"></span>';
+    preview.classList.add('cursor-pointer');
+    preview.classList.remove('hover:bg-slate-200', 'dark:hover:bg-slate-600', 'transition-colors', 'group');
+    preview.title = 'Click to select icon';
+    preview.onmouseenter = null;
+    preview.onmouseleave = null;
+    preview.onclick = function() {
+      openIconPicker();
+    };
+  }
 }
 
 function updateFaviconFromIconData() {
