@@ -210,8 +210,9 @@ window.renderSankey = function() {
   });
 
   const isMobile = window.innerWidth < 640;
+  const rect = container.getBoundingClientRect();
   const width = container.offsetWidth;
-  const height = isMobile ? 450 : 480;
+  const height = rect.height || (isMobile ? 450 : 480);
 
   const sankey = new Sankey(width, height, isMobile ? 60 : 100);
   const { nodes, links } = sankey.layout(items);

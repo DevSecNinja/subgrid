@@ -92,8 +92,9 @@ window.renderPieChart = function() {
   });
 
   const isMobile = window.innerWidth < 640;
+  const rect = container.getBoundingClientRect();
   const width = container.offsetWidth;
-  const height = isMobile ? 400 : 450;
+  const height = rect.height || (isMobile ? 400 : 450);
 
   const chart = new PieChart(width, height, isMobile ? 50 : 70);
   const slices = chart.layout(items);
