@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'subgrid-v1.3.5';
+const CACHE_VERSION = 'v0.1.0';
 const CACHE_NAME = `${CACHE_VERSION}`;
 const OFFLINE_URL = '/offline.html';
 
@@ -47,7 +47,7 @@ self.addEventListener('install', (event) => {
       return cache.add(OFFLINE_URL).then(() => {
         // Then cache other assets, but don't fail if some are missing
         return Promise.allSettled(
-          PRECACHE_ASSETS.map(url => 
+          PRECACHE_ASSETS.map(url =>
             cache.add(url).catch(err => {
               console.warn(`[ServiceWorker] Failed to cache ${url}:`, err);
             })
@@ -133,19 +133,19 @@ self.addEventListener('fetch', (event) => {
 async function cacheFirstStrategy(request, cacheName) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
-  
+
   if (cached) {
     return cached;
   }
 
   try {
     const response = await fetch(request);
-    
+
     // Cache successful responses
     if (response.ok) {
       cache.put(request, response.clone());
     }
-    
+
     return response;
   } catch (error) {
     console.error('[ServiceWorker] Fetch failed:', error);
@@ -156,23 +156,23 @@ async function cacheFirstStrategy(request, cacheName) {
 // Network-first strategy: Try network, fallback to cache
 async function networkFirstStrategy(request, cacheName) {
   const cache = await caches.open(cacheName);
-  
+
   try {
     const response = await fetch(request);
-    
+
     // Cache successful responses
     if (response.ok) {
       cache.put(request, response.clone());
     }
-    
+
     return response;
   } catch (error) {
     const cached = await cache.match(request);
-    
+
     if (cached) {
       return cached;
     }
-    
+
     throw error;
   }
 }
@@ -182,7 +182,7 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
-  
+
   if (event.data && event.data.type === 'CACHE_URLS') {
     event.waitUntil(
       caches.open(CACHE_NAME).then((cache) => {
@@ -190,7 +190,7 @@ self.addEventListener('message', (event) => {
       })
     );
   }
-  
+
   if (event.data && event.data.type === 'CLEAR_CACHE') {
     event.waitUntil(
       caches.keys().then((cacheNames) => {

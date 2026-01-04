@@ -50,10 +50,10 @@ SubGrid is now a fully functional Progressive Web App (PWA) with offline support
    ```bash
    # Option 1: Using Python
    python -m http.server 8000
-   
+
    # Option 2: Using npx
    npx serve .
-   
+
    # Option 3: Using local-web-server
    npx local-web-server --https
    ```
@@ -92,14 +92,14 @@ npx wrangler pages deploy .
 
 ### PWA Best Practices Implemented
 
-✅ **HTTPS only** - Service workers require secure context  
-✅ **Responsive design** - Works on all screen sizes  
-✅ **Fast loading** - Cached assets load instantly  
-✅ **Works offline** - Core features available without network  
-✅ **Installable** - Meets all PWA criteria  
-✅ **App-like experience** - Standalone display mode  
-✅ **Theme colors** - Matches system/browser theme  
-✅ **Proper icons** - Multiple sizes for different devices  
+✅ **HTTPS only** - Service workers require secure context
+✅ **Responsive design** - Works on all screen sizes
+✅ **Fast loading** - Cached assets load instantly
+✅ **Works offline** - Core features available without network
+✅ **Installable** - Meets all PWA criteria
+✅ **App-like experience** - Standalone display mode
+✅ **Theme colors** - Matches system/browser theme
+✅ **Proper icons** - Multiple sizes for different devices
 
 ## File Structure
 
@@ -181,8 +181,9 @@ npx wrangler pages deploy .
 When you make changes:
 
 1. **Update cache version** in `sw.js`:
+
    ```javascript
-   const CACHE_VERSION = 'subgrid-v1.0.1'; // Increment version
+   const CACHE_VERSION = 'v0.1.0'; // Increment version
    ```
 
 2. **Service worker will auto-update**:
@@ -213,11 +214,11 @@ Consider adding:
 
 ## Security Considerations
 
-✅ **No sensitive data in cache** - Only app shell  
-✅ **LocalStorage encryption** - Consider implementing  
-✅ **HTTPS required** - Enforced by service workers  
-✅ **Content Security Policy** - Consider adding headers  
-✅ **No external tracking** - Privacy-first approach  
+✅ **No sensitive data in cache** - Only app shell
+✅ **LocalStorage encryption** - Consider implementing
+✅ **HTTPS required** - Enforced by service workers
+✅ **Content Security Policy** - Consider adding headers
+✅ **No external tracking** - Privacy-first approach
 
 ## Testing Checklist
 
