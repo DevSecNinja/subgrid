@@ -137,8 +137,9 @@ function renderIconPickerResults() {
     html += 'Enter a domain name to preview its logo:';
     html += '</div>';
     
-    // Show preview if query looks like a domain
-    if (query.length > 2) {
+    // Show preview if query looks like a domain (contains a dot or is a known TLD)
+    const looksLikeDomain = query.includes('.') || query.includes('/') || /^(www|http|https)/i.test(query);
+    if (query.length > 2 && looksLikeDomain) {
       const isSelected = selectedIconData && selectedIconData.type === 'logo' && selectedIconData.value === query;
       const logoUrl = "https://img.logo.dev/" + query + "?token=pk_KuI_oR-IQ1-fqpAfz3FPEw&size=100&retina=true&format=png";
       
@@ -151,6 +152,13 @@ function renderIconPickerResults() {
       html += '<div class="font-semibold text-slate-900 dark:text-slate-100">' + query + '</div>';
       html += '<div class="text-xs text-slate-500 dark:text-slate-400">Click to select</div>';
       html += '</div></button>';
+    } else if (query.length > 2) {
+      // Query doesn't look like a domain
+      html += '<div class="rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-4 text-center">';
+      html += '<span class="iconify h-10 w-10 text-slate-300 dark:text-slate-600" data-icon="ph:warning-circle"></span>';
+      html += '<p class="text-sm font-medium text-slate-600 dark:text-slate-400 mt-2">Enter a valid domain name</p>';
+      html += '<p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Example: netflix.com, spotify.com</p>';
+      html += '</div>';
     }
     
     html += '</div>';
