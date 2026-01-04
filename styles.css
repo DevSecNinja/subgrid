@@ -229,6 +229,29 @@ input[type="number"]::-webkit-outer-spin-button {
   fill: #0f172a;
 }
 
+/* Sankey diagram styles */
+.sankey-svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.sankey-node {
+  transition: transform 0.2s ease;
+}
+
+.sankey-link {
+  transition: opacity 0.2s ease;
+}
+
+.sankey-tooltip {
+  transition: opacity 0.2s ease;
+}
+
+/* Dark mode support for Sankey SVG elements */
+.dark .sankey-svg text {
+  fill: currentColor;
+}
+
 /* Theme toggle buttons */
 .active-theme {
   border-color: #6366F1 !important;

@@ -314,6 +314,14 @@
               <span class="iconify h-4 w-4" data-icon="ph:chart-pie-slice-bold"></span>
               Pie
             </button>
+            <button
+              id="view-sankey"
+              onclick="setView('sankey')"
+              class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+            >
+              <span class="iconify h-4 w-4" data-icon="ph:flow-arrow-bold"></span>
+              Flow
+            </button>
           </div>
         </div>
 
@@ -336,6 +344,10 @@
           ></div>
           <div
             id="piechart-container"
+            class="treemap-container mb-4 bg-slate-50 dark:bg-slate-900 sm:mb-6 hidden relative"
+          ></div>
+          <div
+            id="sankey-container"
             class="treemap-container mb-4 bg-slate-50 dark:bg-slate-900 sm:mb-6 hidden relative"
           ></div>
 
@@ -975,6 +987,7 @@
     <script src="js/beeswarm.js"></script>
     <script src="js/circlepack.js"></script>
     <script src="js/piechart.js"></script>
+    <script src="js/sankey.js"></script>
     <script src="js/modals.js"></script>
     <script src="js/bank-import.js"></script>
     <script src="js/geolocation.js"></script>

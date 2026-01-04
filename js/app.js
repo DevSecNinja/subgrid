@@ -216,7 +216,7 @@ function setView(view) {
   currentView = view;
 
   // Update button styles
-  const views = ["treemap", "beeswarm", "circlepack", "piechart"];
+  const views = ["treemap", "beeswarm", "circlepack", "piechart", "sankey"];
   const activeClass = "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900";
   const inactiveClass = "bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300";
 
@@ -239,11 +239,13 @@ function setView(view) {
   const beeswarmContainer = document.getElementById("beeswarm-container");
   const circlepackContainer = document.getElementById("circlepack-container");
   const piechartContainer = document.getElementById("piechart-container");
+  const sankeyContainer = document.getElementById("sankey-container");
 
   treemapContainer.classList.add("hidden");
   beeswarmContainer.classList.add("hidden");
   circlepackContainer.classList.add("hidden");
   piechartContainer.classList.add("hidden");
+  sankeyContainer.classList.add("hidden");
 
   if (view === "treemap") {
     treemapContainer.classList.remove("hidden");
@@ -257,6 +259,9 @@ function setView(view) {
   } else if (view === "piechart") {
     piechartContainer.classList.remove("hidden");
     renderPieChart();
+  } else if (view === "sankey") {
+    sankeyContainer.classList.remove("hidden");
+    renderSankey();
   }
 }
 
@@ -663,6 +668,7 @@ function filterGridSubscriptions() {
     if (typeof window.renderBeeswarm === 'function') window.renderBeeswarm();
     if (typeof window.renderCirclePack === 'function') window.renderCirclePack();
     if (typeof window.renderPieChart === 'function') window.renderPieChart();
+    if (typeof window.renderSankey === 'function') window.renderSankey();
     return;
   }
 
@@ -681,6 +687,7 @@ function filterGridSubscriptions() {
   if (typeof window.renderBeeswarm === 'function') window.renderBeeswarm();
   if (typeof window.renderCirclePack === 'function') window.renderCirclePack();
   if (typeof window.renderPieChart === 'function') window.renderPieChart();
+  if (typeof window.renderSankey === 'function') window.renderSankey();
 }
 
 function clearGridSearch() {
@@ -697,6 +704,7 @@ function clearGridSearch() {
   if (typeof window.renderBeeswarm === 'function') window.renderBeeswarm();
   if (typeof window.renderCirclePack === 'function') window.renderCirclePack();
   if (typeof window.renderPieChart === 'function') window.renderPieChart();
+  if (typeof window.renderSankey === 'function') window.renderSankey();
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
