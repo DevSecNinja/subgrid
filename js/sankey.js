@@ -470,7 +470,7 @@ window.renderSankey = function() {
     if (nodeType === 'subscription') {
       let tapCount = 0;
       let tapTimer = null;
-      
+
       group.addEventListener("click", () => {
         if (window.innerWidth < 500) {
           tapCount++;
@@ -493,7 +493,7 @@ window.renderSankey = function() {
       group.style.cursor = 'pointer';
     }
   });
-  
+
   container.addEventListener("click", e => {
     if (!e.target.closest(".sankey-node-group") && activeTooltip) {
       activeTooltip.classList.remove("active");

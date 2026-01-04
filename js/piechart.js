@@ -271,7 +271,7 @@ window.renderPieChart = function() {
   // Add click handlers and tooltips for slices
   const svgSlices = container.querySelectorAll(".piechart-slice-group");
   const legendItems = container.querySelectorAll(".piechart-legend-item");
-  
+
   // mobile: tap once to show tooltip, tap again to edit
   // desktop: just click to edit
   let activeTooltip = null;
@@ -385,7 +385,7 @@ window.renderPieChart = function() {
       }
     });
   });
-  
+
   container.addEventListener("click", e => {
     if (!e.target.closest(".piechart-slice-group") && !e.target.closest(".piechart-legend-item") && activeTooltip) {
       activeTooltip.classList.remove("active");
