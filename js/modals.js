@@ -84,16 +84,16 @@ function populateCategoryDropdown(selectedValue) {
   presetCategories.forEach(cat => {
     html += `<option value="${cat}">${cat}</option>`;
   });
-  
+
   // Add custom categories
   customCategories.forEach(cat => {
     html += `<option value="${cat}">${cat}</option>`;
   });
-  
+
   html += '<option value="__custom__">+ Add Custom Category</option>';
-  
+
   categorySelect.innerHTML = html;
-  
+
   // Set the selected value if provided
   if (selectedValue) {
     if (Array.from(categorySelect.options).map(opt => opt.value).includes(selectedValue)) {
