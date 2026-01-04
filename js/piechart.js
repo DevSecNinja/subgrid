@@ -271,6 +271,10 @@ window.renderPieChart = function() {
   // Add click handlers and tooltips for slices
   const svgSlices = container.querySelectorAll(".piechart-slice-group");
   const legendItems = container.querySelectorAll(".piechart-legend-item");
+  
+  // mobile: tap once to show tooltip, tap again to edit
+  // desktop: just click to edit
+  let activeTooltip = null;
 
   svgSlices.forEach((sliceGroup, idx) => {
     const slice = sliceGroup.querySelector(".piechart-slice");
@@ -286,10 +290,29 @@ window.renderPieChart = function() {
         <div class="text-slate-400 dark:text-slate-500 text-[10px] sm:text-xs">${sliceData.percentage.toFixed(1)}% of total</div>
       </div>
     `;
-    container.appendChild(tooltip);
+    sliceGroup.appendChild(tooltip);
+
+    let tapCount = 0;
+    let tapTimer = null;
 
     sliceGroup.addEventListener("click", () => {
-      editSub(sliceGroup.dataset.id);
+      if (window.innerWidth < 500) {
+        tapCount++;
+        if (tapCount === 1) {
+          if (activeTooltip && activeTooltip !== sliceGroup) {
+            activeTooltip.classList.remove("active");
+          }
+          sliceGroup.classList.add("active");
+          activeTooltip = sliceGroup;
+          tapTimer = setTimeout(() => { tapCount = 0; }, 300);
+        } else {
+          clearTimeout(tapTimer);
+          tapCount = 0;
+          editSub(sliceGroup.dataset.id);
+        }
+      } else {
+        editSub(sliceGroup.dataset.id);
+      }
     });
 
     sliceGroup.addEventListener("mouseenter", (e) => {
@@ -361,6 +384,13 @@ window.renderPieChart = function() {
         }
       }
     });
+  });
+  
+  container.addEventListener("click", e => {
+    if (!e.target.closest(".piechart-slice-group") && !e.target.closest(".piechart-legend-item") && activeTooltip) {
+      activeTooltip.classList.remove("active");
+      activeTooltip = null;
+    }
   });
 };
 

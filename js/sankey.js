@@ -419,6 +419,9 @@ window.renderSankey = function() {
   container.innerHTML = html;
 
   // Add interactions
+  // mobile: tap once to show tooltip, tap again to edit
+  // desktop: just click to edit
+  let activeTooltip = null;
   const nodeGroups = container.querySelectorAll(".sankey-node-group");
 
   nodeGroups.forEach(group => {
@@ -442,7 +445,7 @@ window.renderSankey = function() {
           <div class="text-slate-300 dark:text-slate-400">${formatCurrency(nodeData.value)}/mo</div>
         </div>
       `;
-      container.appendChild(tooltip);
+      group.appendChild(tooltip);
     }
 
     group.addEventListener("mouseenter", (e) => {
@@ -465,10 +468,36 @@ window.renderSankey = function() {
     });
 
     if (nodeType === 'subscription') {
+      let tapCount = 0;
+      let tapTimer = null;
+      
       group.addEventListener("click", () => {
-        editSub(nodeId);
+        if (window.innerWidth < 500) {
+          tapCount++;
+          if (tapCount === 1) {
+            if (activeTooltip && activeTooltip !== group) {
+              activeTooltip.classList.remove("active");
+            }
+            group.classList.add("active");
+            activeTooltip = group;
+            tapTimer = setTimeout(() => { tapCount = 0; }, 300);
+          } else {
+            clearTimeout(tapTimer);
+            tapCount = 0;
+            editSub(nodeId);
+          }
+        } else {
+          editSub(nodeId);
+        }
       });
       group.style.cursor = 'pointer';
+    }
+  });
+  
+  container.addEventListener("click", e => {
+    if (!e.target.closest(".sankey-node-group") && activeTooltip) {
+      activeTooltip.classList.remove("active");
+      activeTooltip = null;
     }
   });
 };

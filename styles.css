@@ -212,6 +212,14 @@ input[type="number"]::-webkit-outer-spin-button {
   transition: transform 0.2s ease, filter 0.2s ease;
 }
 
+.piechart-slice-group.active {
+  z-index: 100;
+}
+
+.piechart-slice-group.active .piechart-tooltip {
+  opacity: 1;
+}
+
 .piechart-tooltip {
   transition: opacity 0.2s ease;
 }
@@ -237,6 +245,14 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .sankey-node {
   transition: transform 0.2s ease;
+}
+
+.sankey-node-group.active {
+  z-index: 100;
+}
+
+.sankey-node-group.active .sankey-tooltip {
+  opacity: 1;
 }
 
 .sankey-link {
