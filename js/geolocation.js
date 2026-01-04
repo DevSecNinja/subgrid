@@ -19,13 +19,13 @@ async function getCountryCurrencyMap() {
 
     // Fetch from reliable static source (restcountries.com provides free country data)
     const response = await fetch('https://restcountries.com/v3.1/all?fields=cca2,currencies');
-    
+
     if (!response.ok) {
       throw new Error('Failed to fetch country-currency data');
     }
 
     const countries = await response.json();
-    
+
     // Build country code to primary currency map
     const countryToCurrency = {};
     countries.forEach(country => {
@@ -75,7 +75,7 @@ function showLocationConsentDialog() {
           <span class="iconify h-5 w-5 text-indigo-600 dark:text-indigo-400" data-icon="ph:globe-bold"></span>
         </div>
         <div class="flex-1">
-          <p class="text-sm font-bold text-slate-900 dark:text-slate-100">Auto-detect Currency?</p>
+          <p class="text-sm font-bold text-slate-900 dark:text-slate-100">Auto-detect currency?</p>
           <p class="text-xs text-slate-600 dark:text-slate-300 mt-1">We'll use your IP address to detect your country and set the default currency.</p>
         </div>
       </div>
@@ -99,7 +99,7 @@ function showLocationConsentDialog() {
         onclick="declineLocationDetection()"
         class="flex-1 rounded-xl bg-slate-100 dark:bg-slate-700 px-4 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 transition-all hover:bg-slate-200 dark:hover:bg-slate-600 active:scale-95"
       >
-        No Thanks
+        No thanks
       </button>
       <button
         onclick="acceptLocationDetection()"
@@ -109,7 +109,7 @@ function showLocationConsentDialog() {
       </button>
     </div>
   `;
-  
+
   document.body.appendChild(consent);
 }
 
@@ -131,13 +131,13 @@ function declineLocationDetection() {
 
   // Mark as declined
   localStorage.setItem('locationDetected', 'declined');
-  
+
   // Set USD as default if no currency is set
   const currentCurrency = localStorage.getItem('currency');
   if (!currentCurrency) {
     localStorage.setItem('currency', 'USD');
     window.selectedCurrency = 'USD';
-    
+
     // Initialize selectors
     if (typeof window.initCurrencySelector === 'function') {
       window.initCurrencySelector();
@@ -167,7 +167,7 @@ function showManualCurrencyMessage() {
       </button>
     </div>
   `;
-  
+
   document.body.appendChild(message);
 
   // Auto-remove after 4 seconds
@@ -190,7 +190,7 @@ async function performLocationDetection() {
       localStorage.setItem('locationDetected', 'true');
       return;
     }
-    
+
     // Use ipapi.co for IP-based geolocation (free, no API key required)
     const response = await fetch('https://ipapi.co/json/', {
       method: 'GET',
@@ -208,18 +208,18 @@ async function performLocationDetection() {
 
     // Map country to currency using fetched data
     const detectedCurrency = countryCurrencyMap[countryCode] || 'USD';
-    
+
     // Only auto-set if user hasn't manually selected a currency
     const manuallySet = localStorage.getItem('currencyManuallySet');
-    
+
     // Only override if not manually set by user
     if (manuallySet === 'true') {
       return;
     }
-    
+
     // Set currency in localStorage
     localStorage.setItem('currency', detectedCurrency);
-    
+
     // Update selectedCurrency variable in app.js
     if (typeof window.selectedCurrency !== 'undefined') {
       window.selectedCurrency = detectedCurrency;
@@ -228,22 +228,22 @@ async function performLocationDetection() {
     if (typeof selectedCurrency !== 'undefined') {
       selectedCurrency = detectedCurrency;
     }
-    
+
     // Update the dropdown directly
     const currencyDropdown = document.getElementById('currency-selector');
     if (currencyDropdown) {
       currencyDropdown.value = detectedCurrency;
     }
-    
+
     // Reinitialize currency selectors to reflect the new currency
     if (typeof window.initCurrencySelector === 'function') {
       window.initCurrencySelector();
     }
-    
+
     if (typeof window.initFormCurrencySelector === 'function') {
       window.initFormCurrencySelector();
     }
-    
+
     // Refresh rates and render if subscriptions exist
     if (window.subs && window.subs.length > 0) {
       if (typeof window.loadRates === 'function') {
@@ -332,7 +332,7 @@ function clearCountryCurrencyCache() {
 function updateLocationDisplay(country) {
   const locationInfo = document.getElementById('location-info');
   const detectedLocation = document.getElementById('detected-location');
-  
+
   if (locationInfo && detectedLocation && country) {
     detectedLocation.textContent = country;
     locationInfo.classList.remove('hidden');
