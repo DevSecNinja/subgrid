@@ -1,5 +1,8 @@
 // Icon picker functionality for selecting custom icons (logo.dev + MDI)
 
+// Constants
+const LOGO_DEV_API_TOKEN = 'pk_KuI_oR-IQ1-fqpAfz3FPEw';
+
 // State
 let iconPickerSearchQuery = "";
 let selectedIconData = null; // { type: 'logo' | 'mdi', value: string }
@@ -33,7 +36,14 @@ function openIconPicker() {
   if (customIconInput && customIconInput.value) {
     try {
       selectedIconData = JSON.parse(customIconInput.value);
+      // Validate structure
+      if (!selectedIconData || typeof selectedIconData !== 'object' || 
+          !selectedIconData.type || !selectedIconData.value) {
+        console.warn('Invalid custom icon data structure:', customIconInput.value);
+        selectedIconData = null;
+      }
     } catch (e) {
+      console.warn('Failed to parse custom icon data:', customIconInput.value, e);
       selectedIconData = null;
     }
   } else if (currentUrl) {
@@ -141,7 +151,7 @@ function renderIconPickerResults() {
     const looksLikeDomain = query.includes('.') || query.includes('/') || /^(www|http|https)/i.test(query);
     if (query.length > 2 && looksLikeDomain) {
       const isSelected = selectedIconData && selectedIconData.type === 'logo' && selectedIconData.value === query;
-      const logoUrl = "https://img.logo.dev/" + query + "?token=pk_KuI_oR-IQ1-fqpAfz3FPEw&size=100&retina=true&format=png";
+      const logoUrl = "https://img.logo.dev/" + query + "?token=" + LOGO_DEV_API_TOKEN + "&size=100&retina=true&format=png";
       
       html += '<button onclick="selectIcon(\'logo\', \'' + query + '\')" ';
       html += 'class="flex items-center gap-3 rounded-xl border-2 transition-all hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-md active:scale-95 p-3 w-full ';
@@ -176,6 +186,15 @@ function renderIconPickerResults() {
   container.innerHTML = html;
 }
 
+/**
+ * Select an icon and update the related form state and favicon preview.
+ *
+ * @param {'mdi'|'logo'} type - The icon source type. Use 'mdi' for Material Design Icons
+ *   and 'logo' for icons derived from a domain via logo.dev.
+ * @param {string} value - For type === 'mdi', the MDI icon name (without the 'mdi-' prefix).
+ *   For type === 'logo', the domain or URL used to resolve the logo (e.g. 'netflix.com').
+ * @returns {void}
+ */
 function selectIcon(type, value) {
   selectedIconData = { type: type, value: value };
   
@@ -240,14 +259,22 @@ function updateFaviconFromIconData() {
   if (customIconInput && customIconInput.value) {
     try {
       iconData = JSON.parse(customIconInput.value);
+      // Validate structure
+      if (!iconData || typeof iconData !== 'object' || 
+          !iconData.type || !iconData.value) {
+        console.warn('Invalid custom icon data structure in preview:', customIconInput.value);
+        iconData = null;
+      }
     } catch (e) {
-      // Invalid JSON, ignore
+      console.warn('Failed to parse custom icon data for preview:', customIconInput.value, e);
+      iconData = null;
     }
   }
   
   if (iconData && iconData.type === 'mdi') {
-    // Show MDI icon
-    preview.innerHTML = '<span class="iconify h-8 w-8 text-slate-700 dark:text-slate-300" data-icon="mdi:' + iconData.value + '"></span>';
+    // Show MDI icon - sanitize value
+    const sanitizedValue = iconData.value.replace(/[^a-z0-9-]/gi, '');
+    preview.innerHTML = '<span class="iconify h-8 w-8 text-slate-700 dark:text-slate-300" data-icon="mdi:' + sanitizedValue + '"></span>';
     preview.classList.add('cursor-pointer', 'hover:bg-slate-200', 'dark:hover:bg-slate-600', 'transition-colors', 'group');
     preview.title = 'Click to clear icon';
     
@@ -256,14 +283,15 @@ function updateFaviconFromIconData() {
       preview.innerHTML = '<span class="iconify h-8 w-8 text-red-500 dark:text-red-400" data-icon="ph:x-circle-bold"></span>';
     };
     preview.onmouseleave = function() {
-      preview.innerHTML = '<span class="iconify h-8 w-8 text-slate-700 dark:text-slate-300" data-icon="mdi:' + iconData.value + '"></span>';
+      preview.innerHTML = '<span class="iconify h-8 w-8 text-slate-700 dark:text-slate-300" data-icon="mdi:' + sanitizedValue + '"></span>';
     };
     preview.onclick = function() {
       clearSelectedIcon();
     };
   } else if (iconData && iconData.type === 'logo') {
-    // Show logo.dev icon
-    const logoUrl = "https://img.logo.dev/" + iconData.value + "?token=pk_KuI_oR-IQ1-fqpAfz3FPEw&size=100&retina=true&format=png";
+    // Show logo.dev icon - sanitize domain
+    const sanitizedDomain = encodeURIComponent(iconData.value);
+    const logoUrl = "https://img.logo.dev/" + sanitizedDomain + "?token=" + LOGO_DEV_API_TOKEN + "&size=100&retina=true&format=png";
     preview.innerHTML = '<img src="' + logoUrl + '" class="w-full h-full object-cover" crossorigin="anonymous">';
     preview.classList.add('cursor-pointer', 'hover:bg-slate-200', 'dark:hover:bg-slate-600', 'transition-colors');
     preview.title = 'Click to clear icon';
