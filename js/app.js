@@ -216,7 +216,7 @@ function setView(view) {
   currentView = view;
 
   // Update button styles
-  const views = ["treemap", "beeswarm", "circlepack"];
+  const views = ["treemap", "beeswarm", "circlepack", "piechart"];
   const activeClass = "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900";
   const inactiveClass = "bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300";
 
@@ -224,7 +224,7 @@ function setView(view) {
     const btn = document.getElementById("view-" + v);
     if (btn) {
       // Remove all active and inactive classes
-      btn.classList.remove("bg-slate-900", "dark:bg-slate-100", "text-white", "dark:text-slate-900", 
+      btn.classList.remove("bg-slate-900", "dark:bg-slate-100", "text-white", "dark:text-slate-900",
                            "bg-white", "dark:bg-slate-700", "text-slate-600", "dark:text-slate-300");
       if (v === view) {
         btn.classList.add(...activeClass.split(" "));
@@ -238,10 +238,12 @@ function setView(view) {
   const treemapContainer = document.getElementById("bento-grid");
   const beeswarmContainer = document.getElementById("beeswarm-container");
   const circlepackContainer = document.getElementById("circlepack-container");
+  const piechartContainer = document.getElementById("piechart-container");
 
   treemapContainer.classList.add("hidden");
   beeswarmContainer.classList.add("hidden");
   circlepackContainer.classList.add("hidden");
+  piechartContainer.classList.add("hidden");
 
   if (view === "treemap") {
     treemapContainer.classList.remove("hidden");
@@ -252,6 +254,9 @@ function setView(view) {
   } else if (view === "circlepack") {
     circlepackContainer.classList.remove("hidden");
     renderCirclePack();
+  } else if (view === "piechart") {
+    piechartContainer.classList.remove("hidden");
+    renderPieChart();
   }
 }
 
@@ -302,7 +307,7 @@ function renderList() {
   }
 
   let html = "";
-  
+
   if (displaySubs.length === 0 && searchQuery) {
     // Show empty search state
     html = '<div class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-8 text-center">';
@@ -445,12 +450,12 @@ async function clearAllSubs() {
     'Delete All',
     'Cancel'
   );
-  
+
   if (!result.isConfirmed) return;
-  
+
   subs = [];
   save();
-  
+
   showSuccessAlert(
     'Subscriptions Cleared',
     'All subscriptions have been deleted successfully.'
@@ -596,44 +601,44 @@ function handleFormSubmit(evt) {
 function filterSubscriptions() {
   const searchInput = document.getElementById("search-input");
   const clearSearchBtn = document.getElementById("clear-search-btn");
-  
+
   searchQuery = searchInput.value.toLowerCase().trim();
-  
+
   // Show/hide clear button
   if (searchQuery) {
     clearSearchBtn.classList.remove("hidden");
   } else {
     clearSearchBtn.classList.add("hidden");
   }
-  
+
   if (!searchQuery) {
     filteredSubs = [];
     renderList();
     return;
   }
-  
+
   // Filter subscriptions by name, cycle, or price
   filteredSubs = subs.filter(sub => {
     const nameMatch = sub.name.toLowerCase().includes(searchQuery);
     const cycleMatch = sub.cycle.toLowerCase().includes(searchQuery);
     const priceMatch = sub.price.toString().includes(searchQuery);
     const currencyMatch = sub.currency.toLowerCase().includes(searchQuery);
-    
+
     return nameMatch || cycleMatch || priceMatch || currencyMatch;
   });
-  
+
   renderList();
 }
 
 function clearSearch() {
   const searchInput = document.getElementById("search-input");
   const clearSearchBtn = document.getElementById("clear-search-btn");
-  
+
   searchInput.value = "";
   searchQuery = "";
   filteredSubs = [];
   clearSearchBtn.classList.add("hidden");
-  
+
   renderList();
 }
 
@@ -641,54 +646,57 @@ function clearSearch() {
 function filterGridSubscriptions() {
   const searchInput = document.getElementById("search-input-grid");
   const clearSearchBtn = document.getElementById("clear-search-btn-grid");
-  
+
   window.searchQueryGrid = searchInput.value.toLowerCase().trim();
-  
+
   // Show/hide clear button
   if (window.searchQueryGrid) {
     clearSearchBtn.classList.remove("hidden");
   } else {
     clearSearchBtn.classList.add("hidden");
   }
-  
+
   if (!window.searchQueryGrid) {
     window.filteredSubsGrid = [];
     renderGrid();
     // Also update other views
     if (typeof window.renderBeeswarm === 'function') window.renderBeeswarm();
     if (typeof window.renderCirclePack === 'function') window.renderCirclePack();
+    if (typeof window.renderPieChart === 'function') window.renderPieChart();
     return;
   }
-  
+
   // Filter subscriptions by name, cycle, or price
   window.filteredSubsGrid = subs.filter(sub => {
     const nameMatch = sub.name.toLowerCase().includes(window.searchQueryGrid);
     const cycleMatch = sub.cycle.toLowerCase().includes(window.searchQueryGrid);
     const priceMatch = sub.price.toString().includes(window.searchQueryGrid);
     const currencyMatch = sub.currency.toLowerCase().includes(window.searchQueryGrid);
-    
+
     return nameMatch || cycleMatch || priceMatch || currencyMatch;
   });
-  
+
   renderGrid();
   // Also update other views
   if (typeof window.renderBeeswarm === 'function') window.renderBeeswarm();
   if (typeof window.renderCirclePack === 'function') window.renderCirclePack();
+  if (typeof window.renderPieChart === 'function') window.renderPieChart();
 }
 
 function clearGridSearch() {
   const searchInput = document.getElementById("search-input-grid");
   const clearSearchBtn = document.getElementById("clear-search-btn-grid");
-  
+
   searchInput.value = "";
   window.searchQueryGrid = "";
   window.filteredSubsGrid = [];
   clearSearchBtn.classList.add("hidden");
-  
+
   renderGrid();
   // Also update other views
   if (typeof window.renderBeeswarm === 'function') window.renderBeeswarm();
   if (typeof window.renderCirclePack === 'function') window.renderCirclePack();
+  if (typeof window.renderPieChart === 'function') window.renderPieChart();
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
