@@ -11,7 +11,13 @@ class Sankey {
   }
 
   // Categorize subscriptions based on name
-  categorizeSubscription(name) {
+  categorizeSubscription(name, storedCategory) {
+    // Use stored category if available
+    if (storedCategory) {
+      return storedCategory;
+    }
+    
+    // Otherwise, fall back to auto-detection based on name
     const nameLower = name.toLowerCase();
 
     if (nameLower.includes('netflix') || nameLower.includes('disney') || nameLower.includes('hulu') ||
@@ -52,7 +58,7 @@ class Sankey {
     // Group by category
     const categoryGroups = {};
     items.forEach(item => {
-      const category = this.categorizeSubscription(item.name);
+      const category = this.categorizeSubscription(item.name, item.category);
       if (!categoryGroups[category]) {
         categoryGroups[category] = [];
       }
@@ -112,8 +118,8 @@ class Sankey {
     let subY = this.padding + 10;
 
     const sortedItems = [...items].sort((a, b) => {
-      const catA = this.categorizeSubscription(a.name);
-      const catB = this.categorizeSubscription(b.name);
+      const catA = this.categorizeSubscription(a.name, a.category);
+      const catB = this.categorizeSubscription(b.name, b.category);
       if (catA !== catB) {
         return categories.indexOf(catA) - categories.indexOf(catB);
       }
@@ -135,7 +141,7 @@ class Sankey {
         url: item.url,
         color: item.color,
         level: 2,
-        category: this.categorizeSubscription(item.name)
+        category: this.categorizeSubscription(item.name, item.category)
       });
       subY += height + this.nodePadding;
     });
@@ -156,7 +162,7 @@ class Sankey {
 
     // Create links: Categories -> Subscriptions
     sortedItems.forEach(item => {
-      const category = this.categorizeSubscription(item.name);
+      const category = this.categorizeSubscription(item.name, item.category);
       const categoryNode = nodes.find(n => n.id === `category-${category}`);
       const subNode = nodes.find(n => n.id === `sub-${item.id}`);
       if (categoryNode && subNode) {

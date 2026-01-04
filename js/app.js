@@ -477,6 +477,24 @@ function editSub(subId) {
   document.getElementById("sub-currency").value = sub.currency || selectedCurrency;
   document.getElementById("cycle").value = sub.cycle;
   document.getElementById("url").value = sub.url || "";
+  
+  // Set category
+  const categorySelect = document.getElementById("category");
+  const customCategoryInput = document.getElementById("custom-category-input");
+  const categoryOptions = Array.from(categorySelect.options).map(opt => opt.value);
+  
+  if (sub.category && categoryOptions.includes(sub.category)) {
+    categorySelect.value = sub.category;
+    customCategoryInput.classList.add("hidden");
+  } else if (sub.category) {
+    // Custom category - set to __custom__ and show input
+    categorySelect.value = "__custom__";
+    document.getElementById("custom-category").value = sub.category;
+    customCategoryInput.classList.remove("hidden");
+  } else {
+    categorySelect.value = "Other";
+    customCategoryInput.classList.add("hidden");
+  }
 
   updateFavicon(sub.url || "");
   pickColor(sub.color || randColor().id);
@@ -578,6 +596,17 @@ function handleFormSubmit(evt) {
 
   const existingId = document.getElementById("entry-id").value;
 
+  // Get category value - either from select or custom input
+  const categorySelect = document.getElementById("category");
+  const customCategoryInput = document.getElementById("custom-category");
+  let category = categorySelect.value;
+  
+  if (category === "__custom__" && customCategoryInput.value.trim()) {
+    category = customCategoryInput.value.trim();
+  } else if (category === "__custom__") {
+    category = "Other"; // Fallback if no custom category entered
+  }
+
   const subData = {
     id: existingId || Date.now().toString(),
     name: document.getElementById("name").value,
@@ -586,7 +615,8 @@ function handleFormSubmit(evt) {
     cycle: document.getElementById("cycle").value,
     url: document.getElementById("url").value,
     color: document.getElementById("selected-color").value || randColor().id,
-    date: document.getElementById("date").value || ""
+    date: document.getElementById("date").value || "",
+    category: category
   };
 
   if (existingId) {

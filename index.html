@@ -620,7 +620,7 @@
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label
-                class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500"
+                class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
                 >Price</label
               >
               <input
@@ -629,21 +629,21 @@
                 required
                 step="0.01"
                 placeholder="0.00"
-                class="block w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-base font-semibold text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                class="block w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 p-3 text-base font-semibold text-slate-900 dark:text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900"
               />
             </div>
             <div>
               <label
-                class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500"
+                class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
                 >Currency</label
               >
               <div class="relative">
                 <select
                   id="sub-currency"
-                  class="block w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 p-3 text-base font-semibold text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                  class="block w-full appearance-none rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 p-3 text-base font-semibold text-slate-900 dark:text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900"
                 ></select>
                 <span
-                  class="iconify pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                  class="iconify pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500"
                   data-icon="ph:caret-down-bold"
                 ></span>
               </div>
@@ -652,12 +652,12 @@
 
           <div>
             <label
-              class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500"
+              class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
               >Cycle</label
             >
             <select
               id="cycle"
-              class="block w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 p-3 text-base font-semibold text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+              class="block w-full appearance-none rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 p-3 text-base font-semibold text-slate-900 dark:text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900"
             >
               <option value="Monthly">Monthly</option>
               <option value="Yearly">Yearly</option>
@@ -668,7 +668,42 @@
 
           <div>
             <label
-              class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500"
+              class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+              >Category</label
+            >
+            <select
+              id="category"
+              onchange="handleCategoryChange(this.value)"
+              class="block w-full appearance-none rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 p-3 text-base font-semibold text-slate-900 dark:text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900"
+            >
+              <option value="Streaming">Streaming</option>
+              <option value="Music">Music</option>
+              <option value="Cloud Storage">Cloud Storage</option>
+              <option value="Productivity">Productivity</option>
+              <option value="Fitness">Fitness</option>
+              <option value="Gaming">Gaming</option>
+              <option value="News">News</option>
+              <option value="Learning">Learning</option>
+              <option value="Other">Other</option>
+              <option value="__custom__">+ Add Custom Category</option>
+            </select>
+          </div>
+          <div id="custom-category-input" class="hidden">
+            <label
+              class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+              >Custom Category Name</label
+            >
+            <input
+              type="text"
+              id="custom-category"
+              placeholder="e.g. Entertainment"
+              class="block w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 p-3 text-base font-semibold text-slate-900 dark:text-slate-100 placeholder:text-slate-300 dark:placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900"
+            />
+          </div>
+
+          <div>
+            <label
+              class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
               >Color</label
             >
             <div class="grid grid-cols-6 gap-2" id="color-selector"></div>
@@ -677,7 +712,7 @@
 
           <button
             type="submit"
-            class="w-full rounded-xl bg-slate-900 py-4 font-bold text-white shadow-lg shadow-slate-900/20 transition-all hover:bg-slate-800 active:scale-95"
+            class="w-full rounded-xl bg-slate-900 dark:bg-indigo-600 py-4 font-bold text-white shadow-lg shadow-slate-900/20 dark:shadow-indigo-900/20 transition-all hover:bg-slate-800 dark:hover:bg-indigo-700 active:scale-95"
           >
             Save Item
           </button>

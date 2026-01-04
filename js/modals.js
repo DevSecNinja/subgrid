@@ -34,6 +34,8 @@ function openModal() {
   document.getElementById("sub-form").reset();
   document.getElementById("entry-id").value = "";
   document.getElementById("sub-currency").value = selectedCurrency;
+  document.getElementById("category").value = "Other";
+  document.getElementById("custom-category-input").classList.add("hidden");
   updateFavicon("");
   pickColor(randColor().id);
 
@@ -47,6 +49,16 @@ function closeModal() {
   hideModal();
 }
 
+function handleCategoryChange(value) {
+  const customInput = document.getElementById("custom-category-input");
+  if (value === "__custom__") {
+    customInput.classList.remove("hidden");
+    document.getElementById("custom-category").focus();
+  } else {
+    customInput.classList.add("hidden");
+  }
+}
+
 function openModalWithPreset(presetIdx) {
   const preset = presets[presetIdx];
   if (!preset) return;
@@ -58,6 +70,17 @@ function openModalWithPreset(presetIdx) {
   document.getElementById("price").value = preset.price;
   document.getElementById("cycle").value = preset.cycle;
   document.getElementById("url").value = preset.domain;
+  
+  // Set category from preset
+  const categorySelect = document.getElementById("category");
+  const categoryOptions = Array.from(categorySelect.options).map(opt => opt.value);
+  
+  if (preset.category && categoryOptions.includes(preset.category)) {
+    categorySelect.value = preset.category;
+  } else {
+    categorySelect.value = "Other";
+  }
+  document.getElementById("custom-category-input").classList.add("hidden");
 
   updateFavicon(preset.domain);
   pickColor(preset.color);
