@@ -36,6 +36,13 @@ function openModal() {
   document.getElementById("sub-currency").value = selectedCurrency;
   populateCategoryDropdown("Other");
   document.getElementById("custom-category-input").classList.add("hidden");
+  
+  // Clear custom icon
+  const customIconInput = document.getElementById("custom-icon");
+  if (customIconInput) {
+    customIconInput.value = "";
+  }
+  
   updateFavicon("");
   pickColor(randColor().id);
 
@@ -126,6 +133,12 @@ function openModalWithPreset(presetIdx) {
   document.getElementById("price").value = preset.price;
   document.getElementById("cycle").value = preset.cycle;
   document.getElementById("url").value = preset.domain;
+
+  // Clear custom icon
+  const customIconInput = document.getElementById("custom-icon");
+  if (customIconInput) {
+    customIconInput.value = "";
+  }
 
   // Populate category dropdown and set value from preset
   populateCategoryDropdown(preset.category || "Other");

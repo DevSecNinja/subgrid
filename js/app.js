@@ -176,6 +176,23 @@ function toMonthly(sub) {
 }
 
 function iconHtml(sub, className) {
+  // Check for custom icon first
+  if (sub.customIcon) {
+    try {
+      const iconData = typeof sub.customIcon === 'string' ? JSON.parse(sub.customIcon) : sub.customIcon;
+      
+      if (iconData.type === 'mdi') {
+        return '<span class="iconify ' + className + ' shrink-0" data-icon="mdi:' + iconData.value + '"></span>';
+      } else if (iconData.type === 'logo') {
+        const logoUrl = "https://img.logo.dev/" + iconData.value + "?token=pk_KuI_oR-IQ1-fqpAfz3FPEw&size=100&retina=true&format=png";
+        return '<img src="' + logoUrl + '" class="' + className + ' object-contain rounded-lg shrink-0" crossorigin="anonymous">';
+      }
+    } catch (e) {
+      // Invalid custom icon data, fall through to URL-based logic
+    }
+  }
+  
+  // Fall back to URL-based icon if no custom icon or URL exists
   if (!sub.url) {
     return '<span class="iconify ' + className + ' text-slate-400 shrink-0" data-icon="ph:cube-bold"></span>';
   }
@@ -501,7 +518,19 @@ function editSub(subId) {
     customCategoryInput.classList.add("hidden");
   }
 
+  // Load custom icon data if present
+  const customIconInput = document.getElementById("custom-icon");
+  if (customIconInput) {
+    customIconInput.value = sub.customIcon || "";
+  }
+  
   updateFavicon(sub.url || "");
+  
+  // Update favicon preview with custom icon if present
+  if (typeof updateFaviconFromIconData === 'function') {
+    setTimeout(updateFaviconFromIconData, 100);
+  }
+  
   pickColor(sub.color || randColor().id);
 
   document.getElementById("modal-title").innerText = "Edit Subscription";
@@ -623,6 +652,12 @@ function handleFormSubmit(evt) {
     date: document.getElementById("date").value || "",
     category: category
   };
+  
+  // Add custom icon data if present
+  const customIconInput = document.getElementById("custom-icon");
+  if (customIconInput && customIconInput.value) {
+    subData.customIcon = customIconInput.value;
+  }
 
   if (existingId) {
     const index = subs.findIndex(s => s.id === existingId);
