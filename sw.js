@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v0.1.4';
+const CACHE_VERSION = 'v0.1.5';
 const CACHE_NAME = `${CACHE_VERSION}`;
 const OFFLINE_URL = '/offline.html';
 
@@ -8,6 +8,7 @@ const PRECACHE_ASSETS = [
   '/index.html',
   '/offline.html',
   '/styles.css',
+  '/tailwind.css',
   '/manifest.json',
   '/js/app.js',
   '/js/storage.js',
@@ -31,7 +32,6 @@ const PRECACHE_ASSETS = [
 
 // CDN resources to cache on first use
 const CDN_RESOURCES = [
-  'https://cdn.tailwindcss.com',
   'https://code.iconify.design/3/3.1.1/iconify.min.js',
   'https://cdn.jsdelivr.net/npm/modern-screenshot@4.6.7/dist/index.js',
   'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
