@@ -30,7 +30,7 @@
         "pre-commit"
       ],
       "groupName": "pre-commit hooks",
-      "automerge": true
+      "automerge": false
     },
     {
       "description": "Group GitHub Actions updates",
@@ -38,7 +38,7 @@
         "github-actions"
       ],
       "groupName": "GitHub Actions",
-      "automerge": true
+      "automerge": false
     }
   ],
   "vulnerabilityAlerts": {
