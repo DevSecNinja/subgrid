@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v0.1.4';
+const CACHE_VERSION = 'v0.1.5';
 const CACHE_NAME = `${CACHE_VERSION}`;
 const OFFLINE_URL = '/offline.html';
 
@@ -22,6 +22,7 @@ const PRECACHE_ASSETS = [
   '/js/geolocation.js',
   '/js/clear-data.js',
   '/js/sweetalert-config.js',
+  '/js/icon-picker.js',
   '/icons/favicon-16x16.png',
   '/icons/favicon-32x32.png',
   '/icons/icon-192x192.png',
