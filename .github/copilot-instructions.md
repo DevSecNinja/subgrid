@@ -146,33 +146,25 @@ All JavaScript is modular and loaded via `<script>` tags in index.html. No modul
 
 ## Deployment and CI/CD
 
-### GitHub Actions Workflow (`.github/workflows/deploy.yml`)
+### GitHub Actions Workflows
 
-**Trigger:**
-- Push tags matching pattern `v*.*.*` (e.g., v1.0.0)
-- Manual workflow dispatch with version input
+**Release Please (`.github/workflows/release-please.yml`):**
+- Triggered on pushes to `main` and manual workflow dispatch
+- Uses the reusable `DevSecNinja/.github` Release Please workflow
+- Opens release PRs based on Conventional Commits
+- Updates `CHANGELOG.md`, `.release-please-manifest.json`, and `sw.js`
+- Creates the GitHub Release when the release PR is merged
 
-**Jobs:**
-1. **update-version** - Updates CACHE_VERSION in sw.js to match release tag
-   - Uses `sed` to replace version string in sw.js
-   - Commits change back to main branch
-   - Re-tags the release to point to updated commit
-
-2. **build** - Packages files for deployment
-   - Uses actions/upload-pages-artifact to create deployment artifact
-   - No compilation step - uploads directory as-is
-
-3. **deploy** - Deploys to GitHub Pages
-   - Uses actions/deploy-pages
-   - Requires GITHUB_TOKEN with pages:write permission
-
-4. **release** - Creates GitHub Release
-   - Creates release notes with version info
+**Pages (`.github/workflows/pages.yml`):**
+- Triggered on pushes to `main`, pull requests, and manual workflow dispatch
+- Uses the reusable `DevSecNinja/.github` Pages workflow
+- Uploads the repository root as the GitHub Pages artifact
+- Optionally deploys Cloudflare previews when secrets are configured
 
 **Important Workflow Details:**
-- Always commits version update to main branch before deployment
-- Uses pinned action versions with SHA digests (security best practice)
-- Requires `contents: write` permission to commit version updates
+- Reusable workflows are pinned to the `DevSecNinja/.github` release SHA
+- Release Please manages `CACHE_VERSION` in `sw.js` through `extra-files`
+- GitHub App credentials are expected for release PRs to trigger required CI
 
 ### Cloudflare Pages Deployment (Alternative)
 
@@ -331,12 +323,9 @@ git add .
 git commit -m "description"
 git push origin main
 
-# Create release (triggers deployment)
-git tag v0.1.4
-git push origin v0.1.4
-
-# Alternative: Manual GitHub workflow dispatch
-# Go to GitHub Actions > "Release and Deploy" > "Run workflow"
+# Release
+# Merge the Release Please PR opened from Conventional Commits.
+# Alternative: Go to GitHub Actions > "Release Please" > "Run workflow"
 ```
 
 ## When Implementing Features
