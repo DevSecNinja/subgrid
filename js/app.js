@@ -175,16 +175,21 @@ function toMonthly(sub) {
   return convertToBase(monthly, subCurrency);
 }
 
-function iconHtml(sub, className) {
+function iconHtml(sub, classNameOrSize) {
+  // Support numeric px size to avoid arbitrary Tailwind value classes (e.g. w-[24px])
+  const isPx = typeof classNameOrSize === 'number';
+  const sizeStyle = isPx ? ' style="width:' + classNameOrSize + 'px;height:' + classNameOrSize + 'px"' : '';
+  const sizeClass = isPx ? '' : classNameOrSize + ' ';
+
   if (!sub.url) {
-    return '<span class="iconify ' + className + ' text-slate-400 shrink-0" data-icon="ph:cube-bold"></span>';
+    return '<span class="iconify ' + sizeClass + 'text-slate-400 shrink-0"' + sizeStyle + ' data-icon="ph:cube-bold"></span>';
   }
 
   const domain = sub.url.replace(/^(https?:\/\/)?(www\.)?/, "").split("/")[0];
 
   // logo.dev is pretty good at finding logos, free tier is enough for this
   const logoUrl = "https://img.logo.dev/" + domain + "?token=pk_KuI_oR-IQ1-fqpAfz3FPEw&size=100&retina=true&format=png";
-  return '<img src="' + logoUrl + '" class="' + className + ' object-contain rounded-lg shrink-0" crossorigin="anonymous">';
+  return '<img src="' + logoUrl + '" class="' + sizeClass + 'object-contain rounded-lg shrink-0"' + sizeStyle + ' crossorigin="anonymous">';
 }
 
 function goToStep(stepNum) {
