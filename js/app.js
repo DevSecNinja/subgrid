@@ -1,3 +1,6 @@
+// Constants
+const LOGO_DEV_API_TOKEN = 'pk_KuI_oR-IQ1-fqpAfz3FPEw';
+
 let subs = [];
 let step = 1;
 let selectedCurrency = "USD";
@@ -176,6 +179,36 @@ function toMonthly(sub) {
 }
 
 function iconHtml(sub, className) {
+  // Check for custom icon first
+  if (sub.customIcon) {
+    try {
+      const iconData = typeof sub.customIcon === 'string' ? JSON.parse(sub.customIcon) : sub.customIcon;
+      
+      // Validate iconData structure
+      if (iconData && typeof iconData === 'object' && 
+          typeof iconData.type === 'string' && 
+          typeof iconData.value === 'string') {
+        
+        if (iconData.type === 'mdi') {
+          // Sanitize the icon value to prevent XSS
+          const sanitizedValue = iconData.value.replace(/[^a-z0-9-]/gi, '');
+          return '<span class="iconify ' + className + ' shrink-0" data-icon="mdi:' + sanitizedValue + '"></span>';
+        } else if (iconData.type === 'logo') {
+          // Sanitize the domain value
+          const sanitizedDomain = encodeURIComponent(iconData.value);
+          const logoUrl = "https://img.logo.dev/" + sanitizedDomain + "?token=" + LOGO_DEV_API_TOKEN + "&size=100&retina=true&format=png";
+          return '<img src="' + logoUrl + '" class="' + className + ' object-contain rounded-lg shrink-0" crossorigin="anonymous">';
+        }
+      }
+    } catch (e) {
+      // Invalid custom icon data, fall through to URL-based logic
+      if (console && console.error) {
+        console.error('SubGrid: Failed to parse custom icon data for subscription:', sub.name || sub.id, e);
+      }
+    }
+  }
+  
+  // Fall back to URL-based icon if no custom icon or URL exists
   if (!sub.url) {
     return '<span class="iconify ' + className + ' text-slate-400 shrink-0" data-icon="ph:cube-bold"></span>';
   }
@@ -183,7 +216,7 @@ function iconHtml(sub, className) {
   const domain = sub.url.replace(/^(https?:\/\/)?(www\.)?/, "").split("/")[0];
 
   // logo.dev is pretty good at finding logos, free tier is enough for this
-  const logoUrl = "https://img.logo.dev/" + domain + "?token=pk_KuI_oR-IQ1-fqpAfz3FPEw&size=100&retina=true&format=png";
+  const logoUrl = "https://img.logo.dev/" + encodeURIComponent(domain) + "?token=" + LOGO_DEV_API_TOKEN + "&size=100&retina=true&format=png";
   return '<img src="' + logoUrl + '" class="' + className + ' object-contain rounded-lg shrink-0" crossorigin="anonymous">';
 }
 
@@ -432,7 +465,7 @@ function renderPresets() {
   for (let i = 0; i < popular.length; i++) {
     const preset = popular[i];
     const presetIndex = presets.indexOf(preset);
-    const logo = "https://img.logo.dev/" + preset.domain + "?token=pk_KuI_oR-IQ1-fqpAfz3FPEw&size=100&retina=true&format=png";
+    const logo = "https://img.logo.dev/" + preset.domain + "?token=" + LOGO_DEV_API_TOKEN + "&size=100&retina=true&format=png";
 
     html += '<button onclick="openModalWithPreset(' + presetIndex + ')" ';
     html += 'class="flex flex-col items-center gap-1.5 rounded-xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-2.5 shadow-sm transition-all hover:border-indigo-200 dark:hover:border-indigo-600 hover:shadow-md active:scale-95 sm:p-3">';
@@ -501,7 +534,19 @@ function editSub(subId) {
     customCategoryInput.classList.add("hidden");
   }
 
+  // Load custom icon data if present
+  const customIconInput = document.getElementById("custom-icon");
+  if (customIconInput) {
+    customIconInput.value = sub.customIcon || "";
+  }
+  
   updateFavicon(sub.url || "");
+  
+  // Update favicon preview with custom icon if present
+  if (typeof updateFaviconFromIconData === 'function') {
+    setTimeout(updateFaviconFromIconData, 100);
+  }
+  
   pickColor(sub.color || randColor().id);
 
   document.getElementById("modal-title").innerText = "Edit Subscription";
@@ -553,7 +598,7 @@ function updateFavicon(urlInput) {
 
     // only fetch if domain looks legit (at least has a tld)
     if (domain.length > 3) {
-      const logoUrl = "https://img.logo.dev/" + domain + "?token=pk_KuI_oR-IQ1-fqpAfz3FPEw&size=100&retina=true&format=png";
+      const logoUrl = "https://img.logo.dev/" + encodeURIComponent(domain) + "?token=" + LOGO_DEV_API_TOKEN + "&size=100&retina=true&format=png";
       preview.innerHTML = '<img src="' + logoUrl + '" class="w-full h-full object-cover" crossorigin="anonymous">';
     }
   }, 400);
@@ -623,6 +668,12 @@ function handleFormSubmit(evt) {
     date: document.getElementById("date").value || "",
     category: category
   };
+  
+  // Add custom icon data if present
+  const customIconInput = document.getElementById("custom-icon");
+  if (customIconInput && customIconInput.value) {
+    subData.customIcon = customIconInput.value;
+  }
 
   if (existingId) {
     const index = subs.findIndex(s => s.id === existingId);

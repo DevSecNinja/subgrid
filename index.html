@@ -577,6 +577,7 @@
           class="space-y-5 overflow-y-auto bg-white dark:bg-slate-800 p-6"
         >
           <input type="hidden" id="entry-id" />
+          <input type="hidden" id="custom-icon" />
 
           <div>
             <label
@@ -1018,6 +1019,51 @@
       </div>
     </div>
 
+    <!-- Icon Picker Modal -->
+    <div
+      id="icon-picker-backdrop"
+      class="fixed inset-0 z-50 hidden bg-slate-900/30 opacity-0 backdrop-blur-sm transition-opacity duration-300"
+      aria-hidden="true"
+    ></div>
+    <div
+      id="icon-picker-panel"
+      class="pointer-events-none fixed inset-0 z-50 flex hidden items-end justify-center sm:items-center sm:p-4"
+    >
+      <div
+        class="pointer-events-auto flex max-h-[90vh] w-full translate-y-full transform flex-col overflow-hidden rounded-t-3xl bg-white dark:bg-slate-800 opacity-0 shadow-2xl transition-all duration-300 sm:max-w-lg sm:translate-y-10 sm:scale-95 sm:rounded-3xl"
+      >
+        <div
+          class="flex shrink-0 items-center justify-between border-b border-slate-100 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/80 p-5 backdrop-blur"
+        >
+          <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Select Icon</h3>
+          <button
+            onclick="closeIconPicker()"
+            class="rounded-full bg-slate-100 dark:bg-slate-700 p-2 text-slate-400 dark:text-slate-300 transition-colors hover:text-slate-600 dark:hover:text-slate-100"
+          >
+            <span class="iconify h-5 w-5" data-icon="ph:x-bold"></span>
+          </button>
+        </div>
+
+        <div class="border-b border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 px-5 py-3">
+          <div class="relative">
+            <span class="iconify absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 dark:text-slate-500" data-icon="ph:magnifying-glass"></span>
+            <input
+              type="text"
+              id="icon-picker-search"
+              placeholder="Search icons... (e.g., mdi-account or netflix.com)"
+              oninput="searchIconPicker(this.value)"
+              class="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 py-2.5 pl-10 pr-4 text-sm font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900"
+            />
+          </div>
+          <div class="mt-2 text-xs text-slate-500 dark:text-slate-400">
+            <strong>Tip:</strong> Start with "mdi-" to search Material Design Icons only
+          </div>
+        </div>
+
+        <div class="overflow-y-auto bg-white dark:bg-slate-800 p-5" id="icon-picker-results" style="max-height: 60vh;"></div>
+      </div>
+    </div>
+
     <!-- Footer -->
     <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
@@ -1063,6 +1109,7 @@
     <script src="js/piechart.js"></script>
     <script src="js/sankey.js"></script>
     <script src="js/modals.js"></script>
+    <script src="js/icon-picker.js"></script>
     <script src="js/bank-import.js"></script>
     <script src="js/geolocation.js"></script>
     <script src="js/clear-data.js"></script>
