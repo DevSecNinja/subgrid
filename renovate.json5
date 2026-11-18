@@ -13,4 +13,37 @@
     "github>DevSecNinja/.github//.renovate/packageRules.json5",
     "github>DevSecNinja/.github//.renovate/semanticCommits.json5",
   ],
+  // The built-in html manager tracks cdnjs <script>/<link> tags in the HTML
+  // pages; the service worker's precache list repeats those URLs as plain
+  // strings, which only the (opt-in) cdnurl manager reads.
+  cdnurl: {
+    managerFilePatterns: ["/(^|/)sw\\.js$/"],
+  },
+  customManagers: [
+    {
+      customType: "regex",
+      description: "Update npm packages loaded from jsDelivr in the HTML pages and the service worker",
+      managerFilePatterns: ["/(^|/)[^/]+\\.html$/", "/(^|/)sw\\.js$/"],
+      matchStrings: ["https://cdn\\.jsdelivr\\.net/npm/(?<depName>@?[a-z0-9][\\w.-]*(?:/[a-z0-9][\\w.-]*)?)@(?<currentValue>\\d+\\.\\d+\\.\\d+[^/\\s\"']*)/"],
+      datasourceTemplate: "npm",
+    },
+    {
+      // code.iconify.design/3/<version>/ serves @iconify/iconify 3.x. The
+      // major is also in the path, so the rule below keeps updates on 3.x.
+      customType: "regex",
+      description: "Update the Iconify loader in the HTML pages and the service worker",
+      managerFilePatterns: ["/(^|/)[^/]+\\.html$/", "/(^|/)sw\\.js$/"],
+      matchStrings: ["https://code\\.iconify\\.design/3/(?<currentValue>3\\.\\d+\\.\\d+)/iconify\\.min\\.js"],
+      depNameTemplate: "@iconify/iconify",
+      datasourceTemplate: "npm",
+    },
+  ],
+  packageRules: [
+    {
+      description: "The Iconify loader URL carries the major (/3/), so stay on 3.x",
+      matchManagers: ["custom.regex"],
+      matchPackageNames: ["@iconify/iconify"],
+      allowedVersions: "<4",
+    },
+  ],
 }
